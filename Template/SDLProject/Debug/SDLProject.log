@@ -1,0 +1,5 @@
+﻿  main.cpp
+C:\Users\Kevin\Documents\CS3113 Templates\SDLProject\main.cpp(89,21): warning C4018:  '<': signed/unsigned mismatch
+C:\Users\Kevin\Documents\CS3113 Templates\SDLProject\main.cpp(148,39): warning C4244:  '+=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Kevin\Documents\CS3113 Templates\SDLProject\main.cpp(164,21): warning C4018:  '<': signed/unsigned mismatch
+  SDLProject.vcxproj -> C:\Users\Kevin\Documents\CS3113 Templates\SDLProject\Debug\SDLProject.exe
