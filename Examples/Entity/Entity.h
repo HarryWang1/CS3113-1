@@ -17,7 +17,9 @@ class Entity {
 public:
     
     glm::vec3 position;
-    glm::vec3 movement;
+    glm::vec3 velocity;
+    glm::vec3 acceleration;
+    
     float speed;
     
     GLuint textureID;
