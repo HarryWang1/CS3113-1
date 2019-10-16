@@ -22,11 +22,11 @@ bool gameIsRunning = true;
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 
-float lastTicks = 0;
+struct GameState {
+    Entity player;
+};
 
-Entity player;
-
-GLuint fontTextureID;
+GameState state;
 
 GLuint LoadTexture(const char* filePath) {
     int w, h, n;
@@ -51,7 +51,7 @@ GLuint LoadTexture(const char* filePath) {
 
 void Initialize() {
     SDL_Init(SDL_INIT_VIDEO);
-    displayWindow = SDL_CreateWindow("Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+    displayWindow = SDL_CreateWindow("Physics!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
     SDL_GL_MakeCurrent(displayWindow, context);
     
@@ -63,8 +63,9 @@ void Initialize() {
     
     program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
     
-    player.textureID = LoadTexture("me.png");
-    player.speed = 2;
+    state.player.textureID = LoadTexture("me.png");
+    state.player.position = glm::vec3(0, 2, 0);
+    state.player.acceleration = glm::vec3(0, -9.81f, 0);
     
     viewMatrix = glm::mat4(1.0f);
     modelMatrix = glm::mat4(1.0f);
@@ -72,18 +73,18 @@ void Initialize() {
     
     program.SetProjectionMatrix(projectionMatrix);
     program.SetViewMatrix(viewMatrix);
-    program.SetColor(1.0f, 0.0f, 0.0f, 1.0f);
+    program.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
     
     glUseProgram(program.programID);
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+
+
     glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 }
 
 void ProcessInput() {
-    
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
@@ -91,23 +92,50 @@ void ProcessInput() {
             case SDL_WINDOWEVENT_CLOSE:
                 gameIsRunning = false;
                 break;
+                
+            case SDL_KEYDOWN:
+                switch (event.key.keysym.sym) {
+                    case SDLK_SPACE:
+                        // Some sort of action
+                        break;
+                        
+                }
+                break;
         }
     }
 }
+
+#define FIXED_TIMESTEP 0.0166666f
+float lastTicks = 0;
+float accumulator = 0.0f;
 
 void Update() {
     float ticks = (float)SDL_GetTicks() / 1000.0f;
     float deltaTime = ticks - lastTicks;
     lastTicks = ticks;
     
-    player.Update(deltaTime);
+    deltaTime += accumulator;
+    if (deltaTime < FIXED_TIMESTEP) {
+        accumulator = deltaTime;
+        return;
+    }
+    
+    while (deltaTime >= FIXED_TIMESTEP) {
+        // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
+        state.player.Update(FIXED_TIMESTEP);
+        
+        deltaTime -= FIXED_TIMESTEP;
+    }
+    
+    accumulator = deltaTime;
 }
+
 
 void Render() {
     glClear(GL_COLOR_BUFFER_BIT);
     
-    player.Render(&program);
- 
+    state.player.Render(&program);
+    
     SDL_GL_SwapWindow(displayWindow);
 }
 

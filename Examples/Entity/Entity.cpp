@@ -8,7 +8,8 @@ Entity::Entity()
 
 void Entity::Update(float deltaTime)
 {
-    position += movement * speed * deltaTime;
+    velocity += acceleration * deltaTime;
+    position += velocity * deltaTime;
 }
 
 void Entity::Render(ShaderProgram *program) {
