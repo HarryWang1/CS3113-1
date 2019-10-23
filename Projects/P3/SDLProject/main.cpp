@@ -79,6 +79,7 @@ GLuint LoadTexture(const char* filePath) {
     return textureID;
 }
 
+// randomly generates and returns coordinate
 float randomCoord(float min, float max) {
     return (min + 1) + (((float) rand()) / (float) RAND_MAX) * (max - (min + 1));
 }
