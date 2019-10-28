@@ -16,6 +16,7 @@ Entity::Entity()
 bool Entity::CheckCollision(Entity* other) {
     if (isStatic == true) return false;
     if (isActive == false || other->isActive == false) return false;
+    if (other->entityState == DEAD) return false;
     
     // check player position against other's position
     float xdist = fabs(position.x - other->position.x) - ((width + other->width) / 2.0f);
@@ -209,13 +210,11 @@ void Entity::Update(float deltaTime, Entity *objects, int objectCount) {
         // check if enemy has killed player
         if ((entityType == PLAYER and other->entityType == ENEMY) and (collidedLeft or collidedRight)) {
             entityState = DEAD;
-            //std::cout << "KILLED PLAYER\n";
         }
         
         // check if player has killed enemy
         if ((entityType == PLAYER and other->entityType == ENEMY) and (collidedBottom and other->collidedTop)) {
             other->entityState = DEAD;
-            std::cout << "KILLED ENEMY\n";
         }
     }
 }
