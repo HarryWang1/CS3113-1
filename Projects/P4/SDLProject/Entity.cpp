@@ -16,7 +16,7 @@ Entity::Entity()
 bool Entity::CheckCollision(Entity* other) {
     if (isStatic == true) return false;
     if (isActive == false || other->isActive == false) return false;
-    if (other->entityState == DEAD) return false;
+    if (other->entityState == DEAD) return false; // only non-dead objects can collide
     
     // check player position against other's position
     float xdist = fabs(position.x - other->position.x) - ((width + other->width) / 2.0f);
@@ -96,7 +96,6 @@ void Entity::CheckSensorLeft(Entity *platforms, int platCount) {
         Entity platform  = platforms[i];
         
         // check player sensor position against other's position
-        
         if (sensorLeft.x > (platform.position.x-((platform.width) / 2.0f))){
             senseLX = true;
         } else { senseLX = false; }
@@ -130,7 +129,6 @@ void Entity::CheckSensorRight(Entity *platforms, int platCount) {
         Entity platform  = platforms[i];
         
         // check player sensor position against other's position
-        
         if (sensorRight.x < (platform.position.x+((platform.width) / 2.0f))){
             senseRX = true;
         } else { senseRX = false; }

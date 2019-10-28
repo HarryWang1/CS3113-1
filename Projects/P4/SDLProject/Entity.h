@@ -78,9 +78,6 @@ public:
     // jump function
     void Jump();
     
-    // shoot function
-    void Shoot();
-    
     // player collision flags
     bool collidedTop;
     bool collidedBottom;

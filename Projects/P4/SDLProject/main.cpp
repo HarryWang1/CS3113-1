@@ -363,9 +363,6 @@ void Update() {
     }
     
     accumulator = deltaTime;
-    
-    // debug
-    //std::cout << liveCount << "\n";
 }
 
 
