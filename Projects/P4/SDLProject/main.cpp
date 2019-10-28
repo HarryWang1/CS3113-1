@@ -165,7 +165,7 @@ void Initialize() {
     
     
     // loop through and initialize ground platform
-    float platform_vertices[]  = { -0.5, -0.1, 0.5, -0.1, 0.5, 0.1, -0.5, -0.1, 0.5, 0.1, -0.5, 0.1 };
+    float platform_vertices[]  = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
     float platform_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     
     for (int i = 0; i < 10; i++) {
