@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3FE8B2F7234B8BED009B0493 /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3FE8B2F5234B8BED009B0493 /* Entity.cpp */; };
-		3FE8B2FF2353EBD1009B0493 /* ship.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FE8B2FE2353EBD1009B0493 /* ship.png */; };
-		3FE8B3012353EFEF009B0493 /* platform.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FE8B3002353EFEF009B0493 /* platform.png */; };
-		3FE8B3042354765C009B0493 /* lost.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FE8B3022354765C009B0493 /* lost.png */; };
-		3FE8B3052354765C009B0493 /* win.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FE8B3032354765C009B0493 /* win.png */; };
-		3FE8B30723547999009B0493 /* block.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FE8B30623547999009B0493 /* block.png */; };
+		3FA9DE61236570A100B23914 /* win.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FA9DE5F236570A000B23914 /* win.png */; };
+		3FA9DE62236570A100B23914 /* lost.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FA9DE60236570A100B23914 /* lost.png */; };
+		3FA9DE6F2366357B00B23914 /* player left.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FA9DE6B2366357B00B23914 /* player left.png */; };
+		3FA9DE702366357B00B23914 /* enemy left.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FA9DE6C2366357B00B23914 /* enemy left.png */; };
+		3FA9DE712366357B00B23914 /* player right.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FA9DE6D2366357B00B23914 /* player right.png */; };
+		3FA9DE722366357B00B23914 /* enemy right.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FA9DE6E2366357B00B23914 /* enemy right.png */; };
+		3FA9DE742366375000B23914 /* ground stone.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FA9DE732366375000B23914 /* ground stone.png */; };
+		3FA9DE762366395100B23914 /* air stone.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FA9DE752366395000B23914 /* air stone.png */; };
 		DBDF1B532323DE3F007CECB1 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B522323DE3F007CECB1 /* main.cpp */; };
 		DBDF1B5E2323DE8D007CECB1 /* ShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B5D2323DE8D007CECB1 /* ShaderProgram.cpp */; };
 		DBDF1B612323DE9E007CECB1 /* shaders in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBDF1B5C2323DE8D007CECB1 /* shaders */; };
@@ -21,6 +23,7 @@
 		DBDF1B692323DEEA007CECB1 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBDF1B662323DEEA007CECB1 /* SDL2.framework */; };
 		DBDF1B6A2323DEEA007CECB1 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBDF1B672323DEEA007CECB1 /* SDL2_image.framework */; };
 		DBDF1B6B2323DEEA007CECB1 /* SDL2_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DBDF1B682323DEEA007CECB1 /* SDL2_mixer.framework */; };
+		FAD6911E234B8AE400D9AA86 /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FAD6911D234B8AE400D9AA86 /* Entity.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,25 +33,33 @@
 			dstPath = "";
 			dstSubfolderSpec = 6;
 			files = (
-				3FE8B30723547999009B0493 /* block.png in CopyFiles */,
-				3FE8B3042354765C009B0493 /* lost.png in CopyFiles */,
-				3FE8B3052354765C009B0493 /* win.png in CopyFiles */,
+				3FA9DE762366395100B23914 /* air stone.png in CopyFiles */,
+				3FA9DE742366375000B23914 /* ground stone.png in CopyFiles */,
+				3FA9DE6F2366357B00B23914 /* player left.png in CopyFiles */,
+				3FA9DE702366357B00B23914 /* enemy left.png in CopyFiles */,
+				3FA9DE712366357B00B23914 /* player right.png in CopyFiles */,
+				3FA9DE722366357B00B23914 /* enemy right.png in CopyFiles */,
+				3FA9DE61236570A100B23914 /* win.png in CopyFiles */,
+				3FA9DE62236570A100B23914 /* lost.png in CopyFiles */,
 				DBDF1B612323DE9E007CECB1 /* shaders in CopyFiles */,
-				3FE8B2FF2353EBD1009B0493 /* ship.png in CopyFiles */,
-				3FE8B3012353EFEF009B0493 /* platform.png in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		3FE8B2F5234B8BED009B0493 /* Entity.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Entity.cpp; sourceTree = "<group>"; };
-		3FE8B2F6234B8BED009B0493 /* Entity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Entity.h; sourceTree = "<group>"; };
-		3FE8B2FE2353EBD1009B0493 /* ship.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ship.png; path = SDLProject/ship.png; sourceTree = "<group>"; };
-		3FE8B3002353EFEF009B0493 /* platform.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = platform.png; path = SDLProject/platform.png; sourceTree = "<group>"; };
-		3FE8B3022354765C009B0493 /* lost.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = lost.png; path = SDLProject/lost.png; sourceTree = "<group>"; };
-		3FE8B3032354765C009B0493 /* win.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = win.png; path = SDLProject/win.png; sourceTree = "<group>"; };
-		3FE8B30623547999009B0493 /* block.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = block.png; path = SDLProject/block.png; sourceTree = "<group>"; };
+		3FA9DE5F236570A000B23914 /* win.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = win.png; path = SDLProject/win.png; sourceTree = "<group>"; };
+		3FA9DE60236570A100B23914 /* lost.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = lost.png; path = SDLProject/lost.png; sourceTree = "<group>"; };
+		3FA9DE632366355900B23914 /* enemy left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "enemy left.png"; path = "SDLProject/enemy left.png"; sourceTree = "<group>"; };
+		3FA9DE642366355900B23914 /* player left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "player left.png"; path = "SDLProject/player left.png"; sourceTree = "<group>"; };
+		3FA9DE652366355900B23914 /* enemy right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "enemy right.png"; path = "SDLProject/enemy right.png"; sourceTree = "<group>"; };
+		3FA9DE662366355900B23914 /* player right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "player right.png"; path = "SDLProject/player right.png"; sourceTree = "<group>"; };
+		3FA9DE6B2366357B00B23914 /* player left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "player left.png"; path = "SDLProject/player left.png"; sourceTree = "<group>"; };
+		3FA9DE6C2366357B00B23914 /* enemy left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "enemy left.png"; path = "SDLProject/enemy left.png"; sourceTree = "<group>"; };
+		3FA9DE6D2366357B00B23914 /* player right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "player right.png"; path = "SDLProject/player right.png"; sourceTree = "<group>"; };
+		3FA9DE6E2366357B00B23914 /* enemy right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "enemy right.png"; path = "SDLProject/enemy right.png"; sourceTree = "<group>"; };
+		3FA9DE732366375000B23914 /* ground stone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ground stone.png"; path = "SDLProject/ground stone.png"; sourceTree = "<group>"; };
+		3FA9DE752366395000B23914 /* air stone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "air stone.png"; path = "SDLProject/air stone.png"; sourceTree = "<group>"; };
 		DBDF1B4F2323DE3F007CECB1 /* SDLProject */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLProject; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBDF1B522323DE3F007CECB1 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DBDF1B592323DE8D007CECB1 /* ShaderProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderProgram.h; sourceTree = "<group>"; };
@@ -61,6 +72,8 @@
 		DBDF1B662323DEEA007CECB1 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		DBDF1B672323DEEA007CECB1 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
 		DBDF1B682323DEEA007CECB1 /* SDL2_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_mixer.framework; path = ../../../../../Library/Frameworks/SDL2_mixer.framework; sourceTree = "<group>"; };
+		FAD6911C234B8AE400D9AA86 /* Entity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Entity.h; sourceTree = "<group>"; };
+		FAD6911D234B8AE400D9AA86 /* Entity.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Entity.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,11 +95,14 @@
 		DBDF1B462323DE3F007CECB1 = {
 			isa = PBXGroup;
 			children = (
-				3FE8B30623547999009B0493 /* block.png */,
-				3FE8B3022354765C009B0493 /* lost.png */,
-				3FE8B3032354765C009B0493 /* win.png */,
-				3FE8B3002353EFEF009B0493 /* platform.png */,
-				3FE8B2FE2353EBD1009B0493 /* ship.png */,
+				3FA9DE752366395000B23914 /* air stone.png */,
+				3FA9DE732366375000B23914 /* ground stone.png */,
+				3FA9DE6C2366357B00B23914 /* enemy left.png */,
+				3FA9DE6E2366357B00B23914 /* enemy right.png */,
+				3FA9DE6B2366357B00B23914 /* player left.png */,
+				3FA9DE6D2366357B00B23914 /* player right.png */,
+				3FA9DE60236570A100B23914 /* lost.png */,
+				3FA9DE5F236570A000B23914 /* win.png */,
 				DBDF1B512323DE3F007CECB1 /* SDLProject */,
 				DBDF1B502323DE3F007CECB1 /* Products */,
 				DBDF1B5F2323DE92007CECB1 /* Frameworks */,
@@ -104,14 +120,14 @@
 		DBDF1B512323DE3F007CECB1 /* SDLProject */ = {
 			isa = PBXGroup;
 			children = (
+				FAD6911D234B8AE400D9AA86 /* Entity.cpp */,
+				FAD6911C234B8AE400D9AA86 /* Entity.h */,
 				DBDF1B5B2323DE8D007CECB1 /* glm */,
 				DBDF1B5D2323DE8D007CECB1 /* ShaderProgram.cpp */,
 				DBDF1B592323DE8D007CECB1 /* ShaderProgram.h */,
 				DBDF1B5C2323DE8D007CECB1 /* shaders */,
 				DBDF1B5A2323DE8D007CECB1 /* stb_image.h */,
 				DBDF1B522323DE3F007CECB1 /* main.cpp */,
-				3FE8B2F5234B8BED009B0493 /* Entity.cpp */,
-				3FE8B2F6234B8BED009B0493 /* Entity.h */,
 			);
 			path = SDLProject;
 			sourceTree = "<group>";
@@ -119,6 +135,10 @@
 		DBDF1B5F2323DE92007CECB1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3FA9DE632366355900B23914 /* enemy left.png */,
+				3FA9DE652366355900B23914 /* enemy right.png */,
+				3FA9DE642366355900B23914 /* player left.png */,
+				3FA9DE662366355900B23914 /* player right.png */,
 				DBDF1B672323DEEA007CECB1 /* SDL2_image.framework */,
 				DBDF1B682323DEEA007CECB1 /* SDL2_mixer.framework */,
 				DBDF1B662323DEEA007CECB1 /* SDL2.framework */,
@@ -185,7 +205,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DBDF1B532323DE3F007CECB1 /* main.cpp in Sources */,
-				3FE8B2F7234B8BED009B0493 /* Entity.cpp in Sources */,
+				FAD6911E234B8AE400D9AA86 /* Entity.cpp in Sources */,
 				DBDF1B5E2323DE8D007CECB1 /* ShaderProgram.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

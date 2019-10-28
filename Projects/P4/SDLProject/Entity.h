@@ -14,53 +14,72 @@
 
 #define COORDS_SIZE 12 // size of array that stores texture coordinates
 
-// define multiple types of entities in game
-enum EntityType { PLAYER, WALL, BLOCK, PLATFORM };
+// eneity types
+enum  EntityType { PLAYER, ENEMY, PLATFORM };
 
+// entity state
+enum EntityState { STILL, WALKING, DEAD };
+
+// entity direction - which way the entity is facing defined by dirrection last moved
+enum EntityDir { LEFT, RIGHT };
+
+// class
 class Entity {
 public:
     
-    // constructor
-    Entity();
+    // entity state attributes
+    EntityType entityType;
+    EntityState entityState;
+    EntityDir entityDir;
+    EntityType lastCollision;
+    bool isStatic;
+    bool isActive;
     
-    // Entity identifiers
-    EntityType entityType; // store what kinds of entity this is
-    EntityType lastCollision; // stores the last Entity this Entity collided with
-    bool IsStatic; // stores whether this entity is static or not
-    
-    // Entity mechanics
+    // entity physics attributes
     glm::vec3 position;
-    glm::vec3 movement;
     glm::vec3 velocity;
     glm::vec3 acceleration;
+    float speed;
+    
+    // entity textures - holds multiple states of same texture
+    GLuint textures[2];
     
     // entity sensors
     glm::vec3 sensorLeft;
     glm::vec3 sensorRight;
     
-    // Entity properties
+    // eneity size attributes
     float width;
     float height;
-    float speed;
-    float scale;
     
-    // Entity texture information
+    // texture
     GLuint textureID;
     float vertices[COORDS_SIZE];
     float texCoords[COORDS_SIZE];
     
-    // collision functions for x and y
+    // constructor
+    Entity();
+    
+    // player colliison functions
     bool CheckCollision(Entity other);
-    void CheckCollisionsY(Entity *objects, int objectCount);
     void CheckCollisionsX(Entity *objects, int objectCount);
+    void CheckCollisionsY(Entity *objects, int objectCount);
     
     // sensor collision functions
     void CheckSensorLeft(Entity *platforms, int platCount);
     void CheckSensorRight(Entity *platforms, int platCount);
     
-    // Update and render functions
+    // update function
     void Update(float deltaTime, Entity *objects, int objectCount);
+    
+    // render function
     void Render(ShaderProgram *program);
+    
+    // jump function
+    void Jump();
+    
+    // shoot function
+    void Shoot();
     
     // player collision flags
     bool collidedTop;
@@ -71,6 +90,10 @@ public:
     // sensor collision flags
     bool sensorLeftCol;
     bool sensorRightCol;
+    
+    // autonomous movement
+    void startWalk();
 };
+
 
 

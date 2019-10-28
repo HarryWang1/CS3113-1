@@ -1,5 +1,4 @@
 #define GL_SILENCE_DEPRECATION
-#define STB_IMAGE_IMPLEMENTATION
 
 #ifdef _WINDOWS
 #include <GL/glew.h>
@@ -13,7 +12,9 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
 
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
 #include "Entity.h"
 
 
@@ -22,33 +23,41 @@ SDL_Window* displayWindow;
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 
+
 //variables for game state
 bool gameIsRunning = true;
 bool gameWon = false;
 bool gameLost = false;
 
+
 // define platform count for game
-#define PLATFORM_COUNT 1
+#define PLATFORM_COUNT 16
 
-// define obstacle count
-#define OBS_COUNT 10
 
-// define gravity for game
-#define GRAVITY -0.15f
+// define enemy count for game
+#define ENEMY_COUNT 3
+
+
+// define live enemy count for game and helper flag
+bool start = true;
+int liveCount = 0;
 
 
 //define GameState object - will keep track of objects in the game
 struct GameState {
-    // declare player
+    // player
     Entity player;
     
-    //declare platforms
+    // player list - for compatability with update function
+    Entity players[1];
+    
+    // game platforms
     Entity platforms[PLATFORM_COUNT];
     
-    // declare obsticles
-    Entity obsticles[OBS_COUNT];
+    // enemies
+    Entity enemies[ENEMY_COUNT];
     
-    //declare game banners - win & lost
+    // banners - win & lost
     Entity banners[2];
 };
 
@@ -79,15 +88,11 @@ GLuint LoadTexture(const char* filePath) {
     return textureID;
 }
 
-// randomly generates and returns coordinate
-float randomCoord(float min, float max) {
-    return (min + 1) + (((float) rand()) / (float) RAND_MAX) * (max - (min + 1));
-}
 
-//define initialize funciton
+// define initialize function
 void Initialize() {
     SDL_Init(SDL_INIT_VIDEO);
-    displayWindow = SDL_CreateWindow("Lunar Lander - kp1732", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+    displayWindow = SDL_CreateWindow("AI!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
     SDL_GL_MakeCurrent(displayWindow, context);
     
@@ -95,67 +100,124 @@ void Initialize() {
     glewInit();
 #endif
     
-    // set size of viewport
     glViewport(0, 0, 640, 480);
     
-    // load textured shader program, to be used by elements containing textures
+    // load texture shader
     program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
     
     // initialize player attributes
     state.player.entityType = PLAYER;
-    state.player.IsStatic = false;
-    state.player.position = glm::vec3(-4.5f, 3.5f, 0.0f);
-    state.player.scale = 0.5f;
-    state.player.height *= state.player.scale;
-    state.player.width *= state.player.scale;
-    state.player.acceleration = glm::vec3(0.0f, GRAVITY, 0.0f); // initialize acceleration for player
-    //initialize player textures
-    state.player.textureID = LoadTexture("ship.png");
+    state.player.isStatic = false;
+    state.player.width = 1.0f;
+    state.player.position = glm::vec3(-4, 3, 0);
+    state.player.sensorLeft = glm::vec3(state.player.position.x + 0.6f, state.player.position.y - 0.6f, 0);
+    state.player.sensorRight = glm::vec3(state.player.position.x - 0.6f, state.player.position.y - 0.6f, 0);
+    state.player.acceleration = glm::vec3(0, -9.81f, 0);
+    state.player.textures[0] = LoadTexture("player left.png");
+    state.player.textures[1] = LoadTexture("player right.png");
+    state.player.textureID = state.player.textures[1];
     float player_vertices[]  = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
     float player_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     std::memcpy(state.player.vertices, player_vertices, sizeof(state.player.vertices));
     std::memcpy(state.player.texCoords, player_texCoords, sizeof(state.player.texCoords));
-
     
-    // initialize platform attributes
-    state.platforms[0].entityType = PLATFORM;
-    state.platforms[0].IsStatic = true;
-    state.platforms[0].height = 0.15f;
-    state.platforms[0].width = 0.5f;
-    state.platforms[0].position = glm::vec3(4.5f, -3.7f, 0.0f);
-    // initialize platform textures
-    state.platforms[0].textureID = LoadTexture("platform.png");
+    // append player to players list
+    state.players[0] = state.player;
+    
+    
+    // initialize enemy attributes
+    GLuint enemyLeft = LoadTexture("enemy left.png");
+    GLuint enemyRight = LoadTexture("enemy right.png");
+    for (int i = 0; i < ENEMY_COUNT; i++) {
+        state.enemies[i].entityType = ENEMY;
+        state.enemies[i].isStatic = false;
+        state.enemies[i].width = 1.0f;
+        state.enemies[i].acceleration = glm::vec3(0, -9.81f, 0);
+        state.enemies[i].acceleration = glm::vec3(0, -9.81f, 0);
+        state.enemies[i].textures[0] = enemyLeft;
+        state.enemies[i].textures[1] = enemyRight;
+        float enemy_vertices[]  = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
+        float enemy_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+        std::memcpy(state.enemies[i].vertices, enemy_vertices, sizeof(state.enemies[i].vertices));
+        std::memcpy(state.enemies[i].texCoords, enemy_texCoords, sizeof(state.enemies[i].texCoords));
+    }
+    // enemy positions
+    state.enemies[0].position = glm::vec3(4, 4, 0);
+    state.enemies[1].position = glm::vec3(0, 3, 0);
+    state.enemies[2].position = glm::vec3(0, 3, 0);
+    // enemy state
+    state.enemies[0].entityState = STILL;
+    state.enemies[1].entityState = WALKING;
+    state.enemies[2].entityState = WALKING;
+    // enemy default direction
+    state.enemies[0].entityDir = LEFT;
+    state.enemies[1].entityDir = LEFT;
+    state.enemies[2].entityDir = RIGHT;
+    // enemy default texture
+    state.enemies[0].textureID = state.enemies[0].textures[0];
+    state.enemies[1].textureID = state.enemies[1].textures[0];
+    state.enemies[2].textureID = state.enemies[2].textures[1];
+    
+    
+    //load platform textures
+    GLuint groundTextureID = LoadTexture("ground stone.png");
+    GLuint grassTextureID = LoadTexture("air stone.png");
+    
+    
+    // loop through and initialize ground platform
     float platform_vertices[]  = { -0.5, -0.1, 0.5, -0.1, 0.5, 0.1, -0.5, -0.1, 0.5, 0.1, -0.5, 0.1 };
     float platform_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    std::memcpy(state.platforms[0].vertices, platform_vertices, sizeof(state.platforms[0].vertices));
-    std::memcpy(state.platforms[0].texCoords, platform_texCoords, sizeof(state.platforms[0].texCoords));
     
-    
-    // loop through blocks and initialize each
-    GLuint blockTexID = LoadTexture("block.png");
-    for (int i = 0; i < OBS_COUNT; i++) {
-        // attributes
-        state.obsticles[i].entityType = BLOCK;
-        state.obsticles[i].IsStatic = true;
-        state.obsticles[i].scale = 0.5f;
-        state.obsticles[i].height *= state.obsticles[i].scale;
-        state.obsticles[i].width *= state.obsticles[i].scale;
-        
-        //set random position for each obsticle block
-        state.obsticles[i].position.x = randomCoord(-4.5f, 4.5f);
-        state.obsticles[i].position.y = randomCoord(-3.5f, 3.5f);
-        
-        //texture
-        state.obsticles[i].textureID = blockTexID;
-        float block_vertices[]  = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
-        float block_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-        std::memcpy(state.obsticles[i].vertices, block_vertices, sizeof(state.obsticles[i].vertices));
-        std::memcpy(state.obsticles[i].texCoords, block_texCoords, sizeof(state.obsticles[i].texCoords));
+    for (int i = 0; i < 10; i++) {
+        state.platforms[i].entityType = PLATFORM;
+        state.platforms[i].textureID = groundTextureID;
+        state.platforms[i].position = glm::vec3(i - 4.5f, -3.5f, 0);
+        std::memcpy(state.platforms[i].vertices, platform_vertices, sizeof(state.platforms[i].vertices));
+        std::memcpy(state.platforms[i].texCoords, platform_texCoords, sizeof(state.platforms[i].texCoords));
     }
     
     
+    // initialize platforms in the air
+    state.platforms[10].entityType = PLATFORM;
+    state.platforms[10].textureID = grassTextureID;
+    state.platforms[10].position = glm::vec3(-4.5f, 1.50f, 0);
+    std::memcpy(state.platforms[10].vertices, platform_vertices, sizeof(state.platforms[0].vertices));
+    std::memcpy(state.platforms[10].texCoords, platform_texCoords, sizeof(state.platforms[0].texCoords));
+    
+    state.platforms[11].entityType = PLATFORM;
+    state.platforms[11].textureID = grassTextureID;
+    state.platforms[11].position = glm::vec3(-3.5f, 1.50f, 0);
+    std::memcpy(state.platforms[11].vertices, platform_vertices, sizeof(state.platforms[0].vertices));
+    std::memcpy(state.platforms[11].texCoords, platform_texCoords, sizeof(state.platforms[0].texCoords));
+    
+    state.platforms[12].entityType = PLATFORM;
+    state.platforms[12].textureID = grassTextureID;
+    state.platforms[12].position = glm::vec3(-2.5f, 1.50f, 0);
+    std::memcpy(state.platforms[12].vertices, platform_vertices, sizeof(state.platforms[0].vertices));
+    std::memcpy(state.platforms[12].texCoords, platform_texCoords, sizeof(state.platforms[0].texCoords));
+    
+    
+    state.platforms[13].entityType = PLATFORM;
+    state.platforms[13].textureID = grassTextureID;
+    state.platforms[13].position = glm::vec3(2.5f, -0.50f, 0);
+    std::memcpy(state.platforms[13].vertices, platform_vertices, sizeof(state.platforms[0].vertices));
+    std::memcpy(state.platforms[13].texCoords, platform_texCoords, sizeof(state.platforms[0].texCoords));
+    
+    state.platforms[14].entityType = PLATFORM;
+    state.platforms[14].textureID = grassTextureID;
+    state.platforms[14].position = glm::vec3(3.5f, -0.50f, 0);
+    std::memcpy(state.platforms[14].vertices, platform_vertices, sizeof(state.platforms[0].vertices));
+    std::memcpy(state.platforms[14].texCoords, platform_texCoords, sizeof(state.platforms[0].texCoords));
+    
+    state.platforms[15].entityType = PLATFORM;
+    state.platforms[15].textureID = grassTextureID;
+    state.platforms[15].position = glm::vec3(4.5f, -0.50f, 0);
+    std::memcpy(state.platforms[15].vertices, platform_vertices, sizeof(state.platforms[0].vertices));
+    std::memcpy(state.platforms[15].texCoords, platform_texCoords, sizeof(state.platforms[0].texCoords));
+    
+    
     // initialize win banner attributes
-    state.banners[0].IsStatic = true;
+    state.banners[0].isStatic = true;
     // initialize win banner textures
     state.banners[0].textureID = LoadTexture("win.png");
     float banner1_vertices[]  = { -2.5, -0.25, 2.5, -0.25, 2.5, 0.25, -2.5, -0.25, 2.5, 0.25, -2.5, 0.25 };
@@ -165,7 +227,7 @@ void Initialize() {
     
     
     // initialize lose banner attributes
-    state.banners[1].IsStatic = true;
+    state.banners[1].isStatic = true;
     // initialize lose banner textures
     state.banners[1].textureID = LoadTexture("lost.png");
     float banner2_vertices[]  = { -2.5, -0.25, 2.5, -0.25, 2.5, 0.25, -2.5, -0.25, 2.5, 0.25, -2.5, 0.25 };
@@ -173,93 +235,77 @@ void Initialize() {
     std::memcpy(state.banners[1].vertices, banner2_vertices, sizeof(state.banners[1].vertices));
     std::memcpy(state.banners[1].texCoords, banner2_texCoords, sizeof(state.banners[1].texCoords));
 
-    
-    // define view, model and projection matricies
+
+    // set program view, model, and projection matricies
     viewMatrix = glm::mat4(1.0f);
     modelMatrix = glm::mat4(1.0f);
     projectionMatrix = glm::ortho(-5.0f, 5.0f, -3.75f, 3.75f, -1.0f, 1.0f);
-    //set matricies
+    
+    
+    // set matricies
     program.SetProjectionMatrix(projectionMatrix);
     program.SetViewMatrix(viewMatrix);
     program.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
     
     
-    // tell GL which shader programs to use
+    // use our shader program
     glUseProgram(program.programID);
     
-    // enable blending and set blend function
+    
+    // enables and sets blending
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     
-    // set the background color of window
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    // sets background color
+    glClearColor(0.2f, 0.1f, 0.2f, 1.0f);
 }
 
 
-//define process input function
+// define input function
 void ProcessInput() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
-                
-            // if quit event
             case SDL_QUIT:
-            
-            // if windows close event
             case SDL_WINDOWEVENT_CLOSE:
                 gameIsRunning = false;
                 break;
-            
-            // if key pressed
+                
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
-
-                    // space is pressed
                     case SDLK_SPACE:
-                        // exit game
-                        gameIsRunning = false;
+                        state.player.Jump();
                         break;
+                        
                 }
                 break;
         }
     }
     
+    // reset player velocity to prevent continuous movement
+    state.player.velocity.x = 0;
+    
     // Check for pressed/held keys below
-    const Uint8 *keys = SDL_GetKeyboardState(NULL); //stores current state of keyboard
+    const Uint8 *keys = SDL_GetKeyboardState(NULL);
     
-    //reset player acceleration each time or else player keeps moving
-    state.player.acceleration.x = 0;
-    state.player.acceleration.y = GRAVITY;
-    
-    // check for arror input, lock player rotations to 90 degrees
-    if (keys[SDL_SCANCODE_LEFT])
-    {
-        // set x acceleration
-        state.player.acceleration.x = GRAVITY;
+    if (keys[SDL_SCANCODE_A]) {
+        state.player.velocity.x = -3.0f;
+        state.player.entityDir = LEFT;
     }
-    else if  (keys[SDL_SCANCODE_RIGHT])
-    {
-        // set x acceleration
-        state.player.acceleration.x = GRAVITY * -1;
-    }
-    else if  (keys[SDL_SCANCODE_UP])
-    {
-        // set y acceleration
-        state.player.acceleration.y = GRAVITY * -1;
-        
+    else if (keys[SDL_SCANCODE_D]) {
+        state.player.velocity.x = 3.0f;
+        state.player.entityDir = RIGHT;
     }
 }
 
 
-//define variables for update function
-#define FIXED_TIMESTEP 0.0166666f // represents 1/60th of a second
+// define update function
+#define FIXED_TIMESTEP 0.0166666f
 float lastTicks = 0;
 float accumulator = 0.0f;
 
-
-//define update function
 void Update() {
-    
     float ticks = (float)SDL_GetTicks() / 1000.0f;
     float deltaTime = ticks - lastTicks;
     lastTicks = ticks;
@@ -271,61 +317,102 @@ void Update() {
     }
     
     while (deltaTime >= FIXED_TIMESTEP) {
-        // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
+        
+        // check if player lost
+        if (state.player.entityState == DEAD) {
+            gameLost = true;
+        } else if (!start and liveCount == 0) {
+            gameWon = true;
+        }
+        
+        // check and update player against enemies
+        state.player.Update(FIXED_TIMESTEP, state.enemies, ENEMY_COUNT);
+        
+        // check and update player against platforms
         state.player.Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
-        state.player.Update(FIXED_TIMESTEP, state.obsticles, OBS_COUNT);
+        
+        // check and update enemies against platforms and player
+        for (int i = 0; i < ENEMY_COUNT; i++) {
+           
+            // dont update if dead
+            if (state.enemies[i].entityState != DEAD) {
+                state.enemies[i].Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
+            }
+            
+            // start walk routine for enemies
+            state.enemies[i].startWalk();
+            
+            // update enemey walking direction
+            if (state.enemies[i].sensorLeftCol and !state.enemies[i].sensorRightCol) {
+                state.enemies[i].entityDir = LEFT;
+                state.enemies[i].textureID = state.enemies[i].textures[0];
+            } else if (!state.enemies[i].sensorLeftCol and state.enemies[i].sensorRightCol) {
+                state.enemies[i].entityDir = RIGHT;
+                state.enemies[i].textureID = state.enemies[i].textures[1];
+            }
+        }
+        
+        // update player walking direction
+        if (state.player.entityDir == LEFT) {
+            state.player.textureID = state.player.textures[0];
+        } else if (state.player.entityDir == RIGHT) {
+            state.player.textureID = state.player.textures[1];
+        }
+        
         deltaTime -= FIXED_TIMESTEP;
     }
-    accumulator = deltaTime;
-
     
-    // check game for win/loss
-    if (state.player.lastCollision == PLATFORM) {
-        gameWon = true;
-    }
-    else if (state.player.lastCollision == WALL or state.player.lastCollision == BLOCK) {
-        gameLost = true;
-    }
+    accumulator = deltaTime;
+    
+    // debug
+    //std::cout << liveCount << "\n";
 }
 
 
-// define render function
+// define render
 void Render() {
     glClear(GL_COLOR_BUFFER_BIT);
     
-    if (!gameWon and !gameLost) {
+    if (gameWon){
+        //render won banner
+        state.banners[0].Render(&program);
+    } else if (gameLost) {
+        //render lost banner
+        state.banners[1].Render(&program);
+    } else {
+        
         // render player
         state.player.Render(&program);
-        // render platform
-        state.platforms[0].Render(&program);
-        // render obsticle blocks
-        for (Entity block : state.obsticles) {
-            block.Render(&program);
+        
+        // render non-dead enemies
+        liveCount = 0;
+        for (int i = 0; i < ENEMY_COUNT; i++) {
+            if (state.enemies[i].entityState != DEAD) {
+                start = false;
+                liveCount++;
+                state.enemies[i].Render(&program);
+            }
+        }
+        
+        // render platforms
+        for (int i = 0; i < PLATFORM_COUNT; i++) {
+            state.platforms[i].Render(&program);
         }
     }
-    else if (gameWon) {
-        state.banners[0].Render(&program);
-    }
-    else {
-        state.banners[1].Render(&program);
-    }
-
-    // swap window and display next frame
+    // swap to new frame
     SDL_GL_SwapWindow(displayWindow);
 }
 
 
-//define shutdown function
+// define quit function
 void Shutdown() {
     SDL_Quit();
 }
 
-
-//define main function
+// main
 int main(int argc, char* argv[]) {
     Initialize();
     
-    //main game loop
     while (gameIsRunning) {
         ProcessInput();
         Update();

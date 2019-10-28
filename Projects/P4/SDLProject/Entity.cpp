@@ -1,21 +1,41 @@
 #include "Entity.h"
 
+// construct entity
 Entity::Entity()
 {
+    entityType = PLATFORM;
+    isStatic = true;
+    isActive = true;
     position = glm::vec3(0);
     speed = 0;
     width = 1;
     height = 1;
-    scale = 1;
 }
 
-void Entity::CheckCollisionsY(Entity *objects, int objectCount)
-{
-    for (int i = 0; i < objectCount; i++)
-    {
+// check collisions
+bool Entity::CheckCollision(Entity other) {
+    if (isStatic == true) return false;
+    if (isActive == false || other.isActive == false) return false;
+    
+    // check player position against other's position
+    float xdist = fabs(position.x - other.position.x) - ((width + other.width) / 2.0f);
+    float ydist = fabs(position.y - other.position.y) - ((height + other.height) / 2.0f);
+
+    if (xdist < 0 && ydist < 0) {
+        lastCollision = other.entityType;
+        return true;
+    }
+    
+    return false;
+}
+
+
+// check collision and adjust y axis
+void Entity::CheckCollisionsY(Entity *objects, int objectCount) {
+    for (int i = 0; i < objectCount; i++) {
         Entity object = objects[i];
-        if (CheckCollision(object))
-        {
+        
+        if (CheckCollision(object)) {
             float ydist = fabs(position.y - object.position.y);
             float penetrationY = fabs(ydist - (height / 2) - (object.height / 2));
             if (velocity.y > 0) {
@@ -32,13 +52,13 @@ void Entity::CheckCollisionsY(Entity *objects, int objectCount)
     }
 }
 
-void Entity::CheckCollisionsX(Entity *objects, int objectCount)
-{
-    for (int i = 0; i < objectCount; i++)
-    {
+
+// check collision and adjust x axis
+void Entity::CheckCollisionsX(Entity *objects, int objectCount) {
+    for (int i = 0; i < objectCount; i++) {
         Entity object = objects[i];
-        if (CheckCollision(object))
-        {
+        
+        if (CheckCollision(object)) {
             float xdist = fabs(position.x - object.position.x);
             float penetrationX = fabs(xdist - (width / 2) - (object.width / 2));
             if (velocity.x > 0) {
@@ -55,21 +75,10 @@ void Entity::CheckCollisionsX(Entity *objects, int objectCount)
     }
 }
 
-bool Entity::CheckCollision(Entity other)
-{
-    float xdist = fabs(position.x - other.position.x) - ((width + other.width) / 2.0f);
-    float ydist = fabs(position.y - other.position.y) - ((height + other.height) / 2.0f);
-    if (xdist < 0 && ydist < 0)
-    {
-        lastCollision = other.entityType;
-        return true;
-    }
-    
-    return false;
-}
-
 
 // check left sensor
+bool senseLX = false;
+bool senseLY = false;
 void Entity::CheckSensorLeft(Entity *platforms, int platCount) {
     
     for (int i = 0; i < platCount; i++) {
@@ -81,20 +90,29 @@ void Entity::CheckSensorLeft(Entity *platforms, int platCount) {
         
         Entity platform  = platforms[i];
         
-        // check player position against other's position
-        float xdist = fabs(sensorLeft.x - platform.position.x) - ((platform.width) / 2.0f);
-        float ydist = fabs(sensorLeft.y - platform.position.y) - ((platform.height) / 2.0f);
+        // check player sensor position against other's position
         
-        if (xdist < 0 && ydist < 0) {
+        if (sensorLeft.x > (platform.position.x-((platform.width) / 2.0f))){
+            senseLX = true;
+        } else { senseLX = false; }
+        
+        if (sensorLeft.y < (platform.position.y+((platform.height) / 2.0f))){
+            senseLY = true;
+        } else { senseLY = false; }
+        
+        if (senseLX and senseLY and collidedBottom) {
             sensorLeftCol = true;
+            return;
         }
     }
     
-    sensorLeftCol = false;;
+    sensorLeftCol = false;
 }
 
 
 //check right sensor
+bool senseRX = false;
+bool senseRY = false;
 void Entity::CheckSensorRight(Entity *platforms, int platCount) {
     
     for (int i = 0; i < platCount; i++) {
@@ -106,53 +124,103 @@ void Entity::CheckSensorRight(Entity *platforms, int platCount) {
         
         Entity platform  = platforms[i];
         
-        // check player position against other's position
-        float xdist = fabs(sensorRight.x - platform.position.x) - ((platform.width) / 2.0f);
-        float ydist = fabs(sensorRight.y - platform.position.y) - ((platform.height) / 2.0f);
+        // check player sensor position against other's position
         
-        if (xdist < 0 && ydist < 0) {
+        if (sensorRight.x < (platform.position.x+((platform.width) / 2.0f))){
+            senseRX = true;
+        } else { senseRX = false; }
+        
+        if (sensorRight.y < (platform.position.y+((platform.height) / 2.0f))){
+            senseRY = true;
+        } else { senseRY = false; }
+        
+        if (senseRX and senseRY and collidedBottom) {
             sensorRightCol = true;
+            return;
         }
     }
     
-    sensorRightCol = false;;
+    sensorRightCol = false;
 }
 
 
-void Entity::Update(float deltaTime, Entity *objects, int objectCount)
+// make entity jump
+void Entity::Jump()
 {
-    if (entityType == WALL) {
-        return;
-    }
-    else if (entityType == PLATFORM) {
-        return;
-    }
-    else if (entityType == BLOCK) {
-        return;
-    }
-    else if (entityType == PLAYER) {
-        
-        // update velocity
-        velocity += acceleration * deltaTime;
-        
-        // update x and y positions, check for and fix collisions
-        position.y += velocity.y * deltaTime; // Move on Y
-        CheckCollisionsY(objects, objectCount); // Fix if needed
-        position.x += velocity.x * deltaTime; // Move on X
-        CheckCollisionsX(objects, objectCount); // Fix if needed
+    if (collidedBottom) {
+        velocity.y = 5.0f;
     }
 }
 
+
+// starts autonomous walking routine
+void Entity::startWalk() {
+    // only enemies set to WALKING state will start walk routine
+    if (entityType == ENEMY and entityState == WALKING) {
+        //do walk routine
+        if (entityDir == LEFT) {
+            velocity.x = -1.0f;
+        }
+        else if (entityDir == RIGHT) {
+            velocity.x = 1.0f;
+        }
+    }
+}
+
+
+// check this entity against other
+void Entity::Update(float deltaTime, Entity *objects, int objectCount) {
+    
+    // player collision flags
+    collidedTop = false;
+    collidedBottom = false;
+    collidedLeft = false;
+    collidedRight = false;
+    
+    // sensor collision flags
+    sensorLeftCol = false;
+    sensorRightCol = false;
+    
+    velocity += acceleration * deltaTime;
+    
+    position.y += velocity.y * deltaTime;        // Move on Y
+    CheckCollisionsY(objects, objectCount);    // Fix if needed
+    
+    position.x += velocity.x * deltaTime;        // Move on X
+    CheckCollisionsX(objects, objectCount);    // Fix if needed
+    
+    sensorLeft.x = position.x - 0.6f;
+    sensorLeft.y = position.y - 0.6f;
+    CheckSensorLeft(objects, objectCount);
+    
+    sensorRight.x = position.x + 0.6f;
+    sensorRight.y = position.y - 0.6f;
+    CheckSensorRight(objects, objectCount);
+    
+    // check if enemy has killed player
+    for (int i = 0; i < objectCount; i++) {
+        
+        Entity* other = &objects[i]; // this has to be a fucking pointer or else the entityState wont update - took me like 8 hours to realize
+        
+        // check if enemy has killed player
+        if ((entityType == PLAYER and other->entityType == ENEMY) and (collidedLeft or collidedRight)) {
+            entityState = DEAD;
+            //std::cout << "KILLED PLAYER\n";
+        }
+        
+        // check if player has killed enemy
+        if ((entityType == PLAYER and other->entityType == ENEMY) and collidedBottom) {
+            other->entityState = DEAD;
+            //std::cout << "KILLED ENEMY\n";
+        }
+    }
+}
+
+
+// render this entity using shade program
 void Entity::Render(ShaderProgram *program) {
     glm::mat4 modelMatrix = glm::mat4(1.0f);
-    
-    // translate entity according to current position
     modelMatrix = glm::translate(modelMatrix, position);
-    
-    // scale entity according to current scale value
-    modelMatrix = glm::scale(modelMatrix, glm::vec3(scale, scale, 0.0f));
-    
-    // set the matrix
     program->SetModelMatrix(modelMatrix);
     
     glBindTexture(GL_TEXTURE_2D, textureID);
