@@ -275,7 +275,7 @@ void ProcessInput() {
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
                     case SDLK_SPACE:
-                        state.player.Jump();
+                        state.player.Jump(5.0f);
                         break;
                         
                 }
@@ -339,8 +339,9 @@ void Update() {
                 state.enemies[i].Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
             }
             
-            // start walk routine for enemies
+            // start autonomous routine for enemies
             state.enemies[i].startWalk();
+            state.enemies[i].startJump();
             
             // update enemey walking direction
             if (state.enemies[i].sensorLeftCol and !state.enemies[i].sensorRightCol) {

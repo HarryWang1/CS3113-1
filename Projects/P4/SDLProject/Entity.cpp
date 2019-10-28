@@ -148,10 +148,10 @@ void Entity::CheckSensorRight(Entity *platforms, int platCount) {
 
 
 // make entity jump
-void Entity::Jump()
+void Entity::Jump(float amt)
 {
     if (collidedBottom) {
-        velocity.y = 5.0f;
+        velocity.y = amt;
     }
 }
 
@@ -167,6 +167,15 @@ void Entity::startWalk() {
         else if (entityDir == RIGHT) {
             velocity.x = 1.0f;
         }
+    }
+}
+
+// starts autonomous jumping routine
+void Entity::startJump() {
+    // only enemies set to STILL state will start routine
+    if (entityType == ENEMY and entityState == STILL) {
+        // do jump routine
+        Jump(2.0f);
     }
 }
 

@@ -76,7 +76,7 @@ public:
     void Render(ShaderProgram *program);
     
     // jump function
-    void Jump();
+    void Jump(float amt);
     
     // player collision flags
     bool collidedTop;
@@ -90,6 +90,7 @@ public:
     
     // autonomous movement
     void startWalk();
+    void startJump();
 };
 
 
