@@ -61,7 +61,7 @@ public:
     Entity();
     
     // player colliison functions
-    bool CheckCollision(Entity other);
+    bool CheckCollision(Entity* other);
     void CheckCollisionsX(Entity *objects, int objectCount);
     void CheckCollisionsY(Entity *objects, int objectCount);
     

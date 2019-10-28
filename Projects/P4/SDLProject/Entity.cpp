@@ -13,16 +13,16 @@ Entity::Entity()
 }
 
 // check collisions
-bool Entity::CheckCollision(Entity other) {
+bool Entity::CheckCollision(Entity* other) {
     if (isStatic == true) return false;
-    if (isActive == false || other.isActive == false) return false;
+    if (isActive == false || other->isActive == false) return false;
     
     // check player position against other's position
-    float xdist = fabs(position.x - other.position.x) - ((width + other.width) / 2.0f);
-    float ydist = fabs(position.y - other.position.y) - ((height + other.height) / 2.0f);
+    float xdist = fabs(position.x - other->position.x) - ((width + other->width) / 2.0f);
+    float ydist = fabs(position.y - other->position.y) - ((height + other->height) / 2.0f);
 
     if (xdist < 0 && ydist < 0) {
-        lastCollision = other.entityType;
+        lastCollision = other->entityType;
         return true;
     }
     
@@ -33,20 +33,22 @@ bool Entity::CheckCollision(Entity other) {
 // check collision and adjust y axis
 void Entity::CheckCollisionsY(Entity *objects, int objectCount) {
     for (int i = 0; i < objectCount; i++) {
-        Entity object = objects[i];
+        Entity* object = &objects[i];
         
         if (CheckCollision(object)) {
-            float ydist = fabs(position.y - object.position.y);
-            float penetrationY = fabs(ydist - (height / 2) - (object.height / 2));
+            float ydist = fabs(position.y - object->position.y);
+            float penetrationY = fabs(ydist - (height / 2) - (object->height / 2));
             if (velocity.y > 0) {
                 position.y -= penetrationY;
                 velocity.y = 0;
                 collidedTop = true;
+                object->collidedBottom = true;
             }
             else if (velocity.y < 0) {
                 position.y += penetrationY;
                 velocity.y = 0;
                 collidedBottom = true;
+                object->collidedTop = true;
             }
         }
     }
@@ -56,20 +58,22 @@ void Entity::CheckCollisionsY(Entity *objects, int objectCount) {
 // check collision and adjust x axis
 void Entity::CheckCollisionsX(Entity *objects, int objectCount) {
     for (int i = 0; i < objectCount; i++) {
-        Entity object = objects[i];
+        Entity* object = &objects[i];
         
         if (CheckCollision(object)) {
-            float xdist = fabs(position.x - object.position.x);
-            float penetrationX = fabs(xdist - (width / 2) - (object.width / 2));
+            float xdist = fabs(position.x - object->position.x);
+            float penetrationX = fabs(xdist - (width / 2) - (object->width / 2));
             if (velocity.x > 0) {
                 position.x -= penetrationX;
                 velocity.x = 0;
                 collidedRight = true;
+                object->collidedLeft = true;
             }
             else if (velocity.x < 0) {
                 position.x += penetrationX;
                 velocity.x = 0;
                 collidedLeft = true;
+                object->collidedRight = true;
             }
         }
     }
@@ -209,9 +213,9 @@ void Entity::Update(float deltaTime, Entity *objects, int objectCount) {
         }
         
         // check if player has killed enemy
-        if ((entityType == PLAYER and other->entityType == ENEMY) and collidedBottom) {
+        if ((entityType == PLAYER and other->entityType == ENEMY) and (collidedBottom and other->collidedTop)) {
             other->entityState = DEAD;
-            //std::cout << "KILLED ENEMY\n";
+            std::cout << "KILLED ENEMY\n";
         }
     }
 }
