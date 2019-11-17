@@ -15,6 +15,7 @@
 		3FCDDD8C2380D440004B7ADA /* ground_stone.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FCDDD862380D440004B7ADA /* ground_stone.png */; };
 		3FCDDD8D2380D440004B7ADA /* player_right.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FCDDD872380D440004B7ADA /* player_right.png */; };
 		3FCDDD8E2380D440004B7ADA /* enemy_left.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FCDDD882380D440004B7ADA /* enemy_left.png */; };
+		3FCDDD942380EC90004B7ADA /* Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDDD922380EC90004B7ADA /* Map.cpp */; };
 		DBDF1B532323DE3F007CECB1 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B522323DE3F007CECB1 /* main.cpp */; };
 		DBDF1B5E2323DE8D007CECB1 /* ShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B5D2323DE8D007CECB1 /* ShaderProgram.cpp */; };
 		DBDF1B612323DE9E007CECB1 /* shaders in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBDF1B5C2323DE8D007CECB1 /* shaders */; };
@@ -60,6 +61,8 @@
 		3FCDDD862380D440004B7ADA /* ground_stone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ground_stone.png; path = SDLProject/ground_stone.png; sourceTree = "<group>"; };
 		3FCDDD872380D440004B7ADA /* player_right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = player_right.png; path = SDLProject/player_right.png; sourceTree = "<group>"; };
 		3FCDDD882380D440004B7ADA /* enemy_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = enemy_left.png; path = SDLProject/enemy_left.png; sourceTree = "<group>"; };
+		3FCDDD922380EC90004B7ADA /* Map.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Map.cpp; sourceTree = "<group>"; };
+		3FCDDD932380EC90004B7ADA /* Map.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
 		DBDF1B4F2323DE3F007CECB1 /* SDLProject */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLProject; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBDF1B522323DE3F007CECB1 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DBDF1B592323DE8D007CECB1 /* ShaderProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderProgram.h; sourceTree = "<group>"; };
@@ -120,6 +123,8 @@
 		DBDF1B512323DE3F007CECB1 /* SDLProject */ = {
 			isa = PBXGroup;
 			children = (
+				3FCDDD922380EC90004B7ADA /* Map.cpp */,
+				3FCDDD932380EC90004B7ADA /* Map.h */,
 				FAD6911D234B8AE400D9AA86 /* Entity.cpp */,
 				FAD6911C234B8AE400D9AA86 /* Entity.h */,
 				DBDF1B5B2323DE8D007CECB1 /* glm */,
@@ -206,6 +211,7 @@
 			files = (
 				DBDF1B532323DE3F007CECB1 /* main.cpp in Sources */,
 				FAD6911E234B8AE400D9AA86 /* Entity.cpp in Sources */,
+				3FCDDD942380EC90004B7ADA /* Map.cpp in Sources */,
 				DBDF1B5E2323DE8D007CECB1 /* ShaderProgram.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
