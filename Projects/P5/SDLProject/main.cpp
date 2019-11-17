@@ -1,5 +1,4 @@
 #define GL_SILENCE_DEPRECATION
-//Asim Was Here
 #ifdef _WINDOWS
 #include <GL/glew.h>
 #endif
