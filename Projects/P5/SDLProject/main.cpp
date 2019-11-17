@@ -146,8 +146,8 @@ void initEnemy(Entity* enemies, GLuint* textures, int enemy_count) {
         enemies[i].textures[1] = textures[1];
         float enemy_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
         float enemy_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-        std::memcpy(states[0].enemies[i].vertices, enemy_vertices, sizeof(states[0].enemies[i].vertices));
-        std::memcpy(states[0].enemies[i].texCoords, enemy_texCoords, sizeof(states[0].enemies[i].texCoords));
+        std::memcpy(enemies[i].vertices, enemy_vertices, sizeof(enemies[i].vertices));
+        std::memcpy(enemies[i].texCoords, enemy_texCoords, sizeof(enemies[i].texCoords));
     }
 }
 
@@ -160,11 +160,11 @@ void initgPlatform(Entity* platforms, GLuint texture) {
     float platform_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
     float platform_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     for (int i = 0; i < 10; i++) {
-        states[0].platforms[i].entityType = PLATFORM;
-        states[0].platforms[i].textureID = texture;
-        states[0].platforms[i].position = glm::vec3(i - 4.5f, -3.5f, 0);
-        std::memcpy(states[0].platforms[i].vertices, platform_vertices, sizeof(states[0].platforms[i].vertices));
-        std::memcpy(states[0].platforms[i].texCoords, platform_texCoords, sizeof(states[0].platforms[i].texCoords));
+        platforms[i].entityType = PLATFORM;
+        platforms[i].textureID = texture;
+        platforms[i].position = glm::vec3(i - 4.5f, -3.5f, 0);
+        std::memcpy(platforms[i].vertices, platform_vertices, sizeof(platforms[i].vertices));
+        std::memcpy(platforms[i].texCoords, platform_texCoords, sizeof(platforms[i].texCoords));
     }
 }
 
@@ -183,7 +183,7 @@ void initBanner(Entity* banners, GLuint* textures) {
     
     // initialize lose banner attributes
     banners[1].isStatic = true;
-    banners[1].textureID = textures[0];
+    banners[1].textureID = textures[1];
     float banner2_vertices[] = { -2.5, -0.25, 2.5, -0.25, 2.5, 0.25, -2.5, -0.25, 2.5, 0.25, -2.5, 0.25 };
     float banner2_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     std::memcpy(banners[1].vertices, banner2_vertices, sizeof(banners[1].vertices));
