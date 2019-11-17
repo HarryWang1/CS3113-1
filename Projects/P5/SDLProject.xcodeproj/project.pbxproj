@@ -16,6 +16,8 @@
 		3FCDDD8D2380D440004B7ADA /* player_right.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FCDDD872380D440004B7ADA /* player_right.png */; };
 		3FCDDD8E2380D440004B7ADA /* enemy_left.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FCDDD882380D440004B7ADA /* enemy_left.png */; };
 		3FCDDD942380EC90004B7ADA /* Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3FCDDD922380EC90004B7ADA /* Map.cpp */; };
+		3FCDDD972380F1B1004B7ADA /* bgMusic.wav in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FCDDD952380F1B1004B7ADA /* bgMusic.wav */; };
+		3FCDDD982380F1B1004B7ADA /* RockSmash.wav in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3FCDDD962380F1B1004B7ADA /* RockSmash.wav */; };
 		DBDF1B532323DE3F007CECB1 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B522323DE3F007CECB1 /* main.cpp */; };
 		DBDF1B5E2323DE8D007CECB1 /* ShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B5D2323DE8D007CECB1 /* ShaderProgram.cpp */; };
 		DBDF1B612323DE9E007CECB1 /* shaders in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBDF1B5C2323DE8D007CECB1 /* shaders */; };
@@ -39,6 +41,8 @@
 				3FCDDD8B2380D440004B7ADA /* enemy_right.png in CopyFiles */,
 				3FCDDD8C2380D440004B7ADA /* ground_stone.png in CopyFiles */,
 				3FCDDD8D2380D440004B7ADA /* player_right.png in CopyFiles */,
+				3FCDDD972380F1B1004B7ADA /* bgMusic.wav in CopyFiles */,
+				3FCDDD982380F1B1004B7ADA /* RockSmash.wav in CopyFiles */,
 				3FCDDD8E2380D440004B7ADA /* enemy_left.png in CopyFiles */,
 				3FA9DE61236570A100B23914 /* win.png in CopyFiles */,
 				3FA9DE62236570A100B23914 /* lost.png in CopyFiles */,
@@ -63,6 +67,8 @@
 		3FCDDD882380D440004B7ADA /* enemy_left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = enemy_left.png; path = SDLProject/enemy_left.png; sourceTree = "<group>"; };
 		3FCDDD922380EC90004B7ADA /* Map.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Map.cpp; sourceTree = "<group>"; };
 		3FCDDD932380EC90004B7ADA /* Map.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Map.h; sourceTree = "<group>"; };
+		3FCDDD952380F1B1004B7ADA /* bgMusic.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = bgMusic.wav; path = SDLProject/bgMusic.wav; sourceTree = "<group>"; };
+		3FCDDD962380F1B1004B7ADA /* RockSmash.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = RockSmash.wav; path = SDLProject/RockSmash.wav; sourceTree = "<group>"; };
 		DBDF1B4F2323DE3F007CECB1 /* SDLProject */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLProject; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBDF1B522323DE3F007CECB1 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DBDF1B592323DE8D007CECB1 /* ShaderProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderProgram.h; sourceTree = "<group>"; };
@@ -98,6 +104,8 @@
 		DBDF1B462323DE3F007CECB1 = {
 			isa = PBXGroup;
 			children = (
+				3FCDDD952380F1B1004B7ADA /* bgMusic.wav */,
+				3FCDDD962380F1B1004B7ADA /* RockSmash.wav */,
 				3FCDDD842380D440004B7ADA /* air_stone.png */,
 				3FCDDD882380D440004B7ADA /* enemy_left.png */,
 				3FCDDD852380D440004B7ADA /* enemy_right.png */,
@@ -341,6 +349,7 @@
 				HEADER_SEARCH_PATHS = (
 					/Library/Frameworks/SDL2_image.framework/Versions/A/Headers,
 					/Library/Frameworks/SDL2.framework/Versions/A/Headers,
+					/Library/Frameworks/SDL2_mixer.framework/Versions/A/Headers,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -357,6 +366,7 @@
 				HEADER_SEARCH_PATHS = (
 					/Library/Frameworks/SDL2_image.framework/Versions/A/Headers,
 					/Library/Frameworks/SDL2.framework/Versions/A/Headers,
+					/Library/Frameworks/SDL2_mixer.framework/Versions/A/Headers,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
