@@ -1,6 +1,8 @@
 #include "Entity.h"
 #include <SDL_mixer.h>
 
+
+
 // construct entity
 Entity::Entity()
 {
@@ -228,11 +230,12 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
 
         // check if enemy has killed player
         if ((entityType == PLAYER and other->entityType == ENEMY) and (collidedLeft or collidedRight)) {
-            if (lives > 0) {
-                lives--;
+            if (lives > 0 ) {
+                lifeLock = true;
+                 
                 //set posiiton back to start
                 // this is subtracting multiple lives, probably due to updating for all the enemies at once fix later
-                position = startPosition;
+                
             }
             else {
                 entityState = DEAD;

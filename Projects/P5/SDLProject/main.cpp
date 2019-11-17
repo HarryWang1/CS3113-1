@@ -28,6 +28,7 @@ glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 bool gameIsRunning = true;
 bool gameWon = false;
 bool gameLost = false;
+glm::vec3 startPosition = glm::vec3(-4, 3, 0);
 
 
 // define platform count for game
@@ -333,6 +334,7 @@ void Update() {
 
         // check and update player against enemies
         state.player.Update(FIXED_TIMESTEP, state.enemies, ENEMY_COUNT);
+ 
 
         // check and update player against platforms
         state.player.Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
@@ -372,6 +374,14 @@ void Update() {
     }
 
     accumulator = deltaTime;
+
+    if (state.player.lifeLock) {
+
+    
+    state.player.lives--;
+    state.player.position = startPosition;
+    state.player.lifeLock = false;
+    }
 }
 
 
