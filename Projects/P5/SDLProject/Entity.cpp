@@ -14,7 +14,7 @@ Entity::Entity()
     speed = 0;
     width = 1;
     height = 1;
-    lives = 6;
+    lives = 2;
 }
 
 // check collisions

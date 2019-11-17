@@ -38,6 +38,9 @@ glm::vec3 startPosition = glm::vec3(-4, 3, 0);
 // define enemy count for game
 #define ENEMY_COUNT 3
 
+// define level count
+#define LEVELS 3
+
 
 // define live enemy count for game and helper flag
 bool start = true;
@@ -48,9 +51,6 @@ int liveCount = 0;
 struct GameState {
     // player
     Entity player;
-
-    // player list - for compatability with update function
-    Entity players[1];
 
     // game platforms
     Entity platforms[PLATFORM_COUNT];
@@ -64,7 +64,7 @@ struct GameState {
 
 
 //declare GameState object
-GameState state;
+GameState states[LEVELS];
 
 
 //define load texture function
@@ -112,57 +112,54 @@ void Initialize() {
     program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
 
     // initialize player attributes
-    state.player.entityType = PLAYER;
-    state.player.isStatic = false;
-    state.player.width = 1.0f;
-    state.player.position = state.player.startPosition;
-    state.player.sensorLeft = glm::vec3(state.player.position.x + 0.6f, state.player.position.y - 0.6f, 0);
-    state.player.sensorRight = glm::vec3(state.player.position.x - 0.6f, state.player.position.y - 0.6f, 0);
-    state.player.acceleration = glm::vec3(0, -9.81f, 0);
-    state.player.textures[0] = LoadTexture("player_left.png");
-    state.player.textures[1] = LoadTexture("player_right.png");
-    state.player.textureID = state.player.textures[1];
+    states[0].player.entityType = PLAYER;
+    states[0].player.isStatic = false;
+    states[0].player.width = 1.0f;
+    states[0].player.position = states[0].player.startPosition;
+    states[0].player.sensorLeft = glm::vec3(states[0].player.position.x + 0.6f, states[0].player.position.y - 0.6f, 0);
+    states[0].player.sensorRight = glm::vec3(states[0].player.position.x - 0.6f, states[0].player.position.y - 0.6f, 0);
+    states[0].player.acceleration = glm::vec3(0, -9.81f, 0);
+    states[0].player.textures[0] = LoadTexture("player_left.png");
+    states[0].player.textures[1] = LoadTexture("player_right.png");
+    states[0].player.textureID = states[0].player.textures[1];
     float player_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
     float player_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    std::memcpy(state.player.vertices, player_vertices, sizeof(state.player.vertices));
-    std::memcpy(state.player.texCoords, player_texCoords, sizeof(state.player.texCoords));
-
-    // append player to players list
-    state.players[0] = state.player;
+    std::memcpy(states[0].player.vertices, player_vertices, sizeof(states[0].player.vertices));
+    std::memcpy(states[0].player.texCoords, player_texCoords, sizeof(states[0].player.texCoords));
 
 
     // initialize enemy attributes
     GLuint enemyLeft = LoadTexture("enemy_left.png");
     GLuint enemyRight = LoadTexture("enemy_right.png");
     for (int i = 0; i < ENEMY_COUNT; i++) {
-        state.enemies[i].entityType = ENEMY;
-        state.enemies[i].isStatic = false;
-        state.enemies[i].width = 1.0f;
-        state.enemies[i].acceleration = glm::vec3(0, -9.81f, 0);
-        state.enemies[i].acceleration = glm::vec3(0, -9.81f, 0);
-        state.enemies[i].textures[0] = enemyLeft;
-        state.enemies[i].textures[1] = enemyRight;
+        states[0].enemies[i].entityType = ENEMY;
+        states[0].enemies[i].isStatic = false;
+        states[0].enemies[i].width = 1.0f;
+        states[0].enemies[i].acceleration = glm::vec3(0, -9.81f, 0);
+        states[0].enemies[i].acceleration = glm::vec3(0, -9.81f, 0);
+        states[0].enemies[i].textures[0] = enemyLeft;
+        states[0].enemies[i].textures[1] = enemyRight;
         float enemy_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
         float enemy_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-        std::memcpy(state.enemies[i].vertices, enemy_vertices, sizeof(state.enemies[i].vertices));
-        std::memcpy(state.enemies[i].texCoords, enemy_texCoords, sizeof(state.enemies[i].texCoords));
+        std::memcpy(states[0].enemies[i].vertices, enemy_vertices, sizeof(states[0].enemies[i].vertices));
+        std::memcpy(states[0].enemies[i].texCoords, enemy_texCoords, sizeof(states[0].enemies[i].texCoords));
     }
     // enemy positions
-    state.enemies[0].position = glm::vec3(4, 4, 0);
-    state.enemies[1].position = glm::vec3(0, 3, 0);
-    state.enemies[2].position = glm::vec3(0, 3, 0);
-    // enemy state
-    state.enemies[0].entityState = STILL;
-    state.enemies[1].entityState = WALKING;
-    state.enemies[2].entityState = WALKING;
+    states[0].enemies[0].position = glm::vec3(4, 4, 0);
+    states[0].enemies[1].position = glm::vec3(0, 3, 0);
+    states[0].enemies[2].position = glm::vec3(0, 3, 0);
+    // enemy states[0]
+    states[0].enemies[0].entityState = STILL;
+    states[0].enemies[1].entityState = WALKING;
+    states[0].enemies[2].entityState = WALKING;
     // enemy default direction
-    state.enemies[0].entityDir = LEFT;
-    state.enemies[1].entityDir = LEFT;
-    state.enemies[2].entityDir = RIGHT;
+    states[0].enemies[0].entityDir = LEFT;
+    states[0].enemies[1].entityDir = LEFT;
+    states[0].enemies[2].entityDir = RIGHT;
     // enemy default texture
-    state.enemies[0].textureID = state.enemies[0].textures[0];
-    state.enemies[1].textureID = state.enemies[1].textures[0];
-    state.enemies[2].textureID = state.enemies[2].textures[1];
+    states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
+    states[0].enemies[1].textureID = states[0].enemies[1].textures[0];
+    states[0].enemies[2].textureID = states[0].enemies[2].textures[1];
 
 
     //load platform textures
@@ -175,71 +172,71 @@ void Initialize() {
     float platform_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
 
     for (int i = 0; i < 10; i++) {
-        state.platforms[i].entityType = PLATFORM;
-        state.platforms[i].textureID = groundTextureID;
-        state.platforms[i].position = glm::vec3(i - 4.5f, -3.5f, 0);
-        std::memcpy(state.platforms[i].vertices, platform_vertices, sizeof(state.platforms[i].vertices));
-        std::memcpy(state.platforms[i].texCoords, platform_texCoords, sizeof(state.platforms[i].texCoords));
+        states[0].platforms[i].entityType = PLATFORM;
+        states[0].platforms[i].textureID = groundTextureID;
+        states[0].platforms[i].position = glm::vec3(i - 4.5f, -3.5f, 0);
+        std::memcpy(states[0].platforms[i].vertices, platform_vertices, sizeof(states[0].platforms[i].vertices));
+        std::memcpy(states[0].platforms[i].texCoords, platform_texCoords, sizeof(states[0].platforms[i].texCoords));
     }
 
 
     // initialize platforms in the air
-    state.platforms[10].entityType = PLATFORM;
-    state.platforms[10].textureID = grassTextureID;
-    state.platforms[10].position = glm::vec3(-4.5f, 1.50f, 0);
-    std::memcpy(state.platforms[10].vertices, platform_vertices, sizeof(state.platforms[0].vertices));
-    std::memcpy(state.platforms[10].texCoords, platform_texCoords, sizeof(state.platforms[0].texCoords));
+    states[0].platforms[10].entityType = PLATFORM;
+    states[0].platforms[10].textureID = grassTextureID;
+    states[0].platforms[10].position = glm::vec3(-4.5f, 1.50f, 0);
+    std::memcpy(states[0].platforms[10].vertices, platform_vertices, sizeof(states[0].platforms[0].vertices));
+    std::memcpy(states[0].platforms[10].texCoords, platform_texCoords, sizeof(states[0].platforms[0].texCoords));
 
-    state.platforms[11].entityType = PLATFORM;
-    state.platforms[11].textureID = grassTextureID;
-    state.platforms[11].position = glm::vec3(-3.5f, 1.50f, 0);
-    std::memcpy(state.platforms[11].vertices, platform_vertices, sizeof(state.platforms[0].vertices));
-    std::memcpy(state.platforms[11].texCoords, platform_texCoords, sizeof(state.platforms[0].texCoords));
+    states[0].platforms[11].entityType = PLATFORM;
+    states[0].platforms[11].textureID = grassTextureID;
+    states[0].platforms[11].position = glm::vec3(-3.5f, 1.50f, 0);
+    std::memcpy(states[0].platforms[11].vertices, platform_vertices, sizeof(states[0].platforms[0].vertices));
+    std::memcpy(states[0].platforms[11].texCoords, platform_texCoords, sizeof(states[0].platforms[0].texCoords));
 
-    state.platforms[12].entityType = PLATFORM;
-    state.platforms[12].textureID = grassTextureID;
-    state.platforms[12].position = glm::vec3(-2.5f, 1.50f, 0);
-    std::memcpy(state.platforms[12].vertices, platform_vertices, sizeof(state.platforms[0].vertices));
-    std::memcpy(state.platforms[12].texCoords, platform_texCoords, sizeof(state.platforms[0].texCoords));
+    states[0].platforms[12].entityType = PLATFORM;
+    states[0].platforms[12].textureID = grassTextureID;
+    states[0].platforms[12].position = glm::vec3(-2.5f, 1.50f, 0);
+    std::memcpy(states[0].platforms[12].vertices, platform_vertices, sizeof(states[0].platforms[0].vertices));
+    std::memcpy(states[0].platforms[12].texCoords, platform_texCoords, sizeof(states[0].platforms[0].texCoords));
 
 
-    state.platforms[13].entityType = PLATFORM;
-    state.platforms[13].textureID = grassTextureID;
-    state.platforms[13].position = glm::vec3(2.5f, -0.50f, 0);
-    std::memcpy(state.platforms[13].vertices, platform_vertices, sizeof(state.platforms[0].vertices));
-    std::memcpy(state.platforms[13].texCoords, platform_texCoords, sizeof(state.platforms[0].texCoords));
+    states[0].platforms[13].entityType = PLATFORM;
+    states[0].platforms[13].textureID = grassTextureID;
+    states[0].platforms[13].position = glm::vec3(2.5f, -0.50f, 0);
+    std::memcpy(states[0].platforms[13].vertices, platform_vertices, sizeof(states[0].platforms[0].vertices));
+    std::memcpy(states[0].platforms[13].texCoords, platform_texCoords, sizeof(states[0].platforms[0].texCoords));
 
-    state.platforms[14].entityType = PLATFORM;
-    state.platforms[14].textureID = grassTextureID;
-    state.platforms[14].position = glm::vec3(3.5f, -0.50f, 0);
-    std::memcpy(state.platforms[14].vertices, platform_vertices, sizeof(state.platforms[0].vertices));
-    std::memcpy(state.platforms[14].texCoords, platform_texCoords, sizeof(state.platforms[0].texCoords));
+    states[0].platforms[14].entityType = PLATFORM;
+    states[0].platforms[14].textureID = grassTextureID;
+    states[0].platforms[14].position = glm::vec3(3.5f, -0.50f, 0);
+    std::memcpy(states[0].platforms[14].vertices, platform_vertices, sizeof(states[0].platforms[0].vertices));
+    std::memcpy(states[0].platforms[14].texCoords, platform_texCoords, sizeof(states[0].platforms[0].texCoords));
 
-    state.platforms[15].entityType = PLATFORM;
-    state.platforms[15].textureID = grassTextureID;
-    state.platforms[15].position = glm::vec3(4.5f, -0.50f, 0);
-    std::memcpy(state.platforms[15].vertices, platform_vertices, sizeof(state.platforms[0].vertices));
-    std::memcpy(state.platforms[15].texCoords, platform_texCoords, sizeof(state.platforms[0].texCoords));
+    states[0].platforms[15].entityType = PLATFORM;
+    states[0].platforms[15].textureID = grassTextureID;
+    states[0].platforms[15].position = glm::vec3(4.5f, -0.50f, 0);
+    std::memcpy(states[0].platforms[15].vertices, platform_vertices, sizeof(states[0].platforms[0].vertices));
+    std::memcpy(states[0].platforms[15].texCoords, platform_texCoords, sizeof(states[0].platforms[0].texCoords));
 
 
     // initialize win banner attributes
-    state.banners[0].isStatic = true;
+    states[0].banners[0].isStatic = true;
     // initialize win banner textures
-    state.banners[0].textureID = LoadTexture("win.png");
+    states[0].banners[0].textureID = LoadTexture("win.png");
     float banner1_vertices[] = { -2.5, -0.25, 2.5, -0.25, 2.5, 0.25, -2.5, -0.25, 2.5, 0.25, -2.5, 0.25 };
     float banner1_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    std::memcpy(state.banners[0].vertices, banner1_vertices, sizeof(state.banners[0].vertices));
-    std::memcpy(state.banners[0].texCoords, banner1_texCoords, sizeof(state.banners[0].texCoords));
+    std::memcpy(states[0].banners[0].vertices, banner1_vertices, sizeof(states[0].banners[0].vertices));
+    std::memcpy(states[0].banners[0].texCoords, banner1_texCoords, sizeof(states[0].banners[0].texCoords));
 
 
     // initialize lose banner attributes
-    state.banners[1].isStatic = true;
+    states[0].banners[1].isStatic = true;
     // initialize lose banner textures
-    state.banners[1].textureID = LoadTexture("lost.png");
+    states[0].banners[1].textureID = LoadTexture("lost.png");
     float banner2_vertices[] = { -2.5, -0.25, 2.5, -0.25, 2.5, 0.25, -2.5, -0.25, 2.5, 0.25, -2.5, 0.25 };
     float banner2_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    std::memcpy(state.banners[1].vertices, banner2_vertices, sizeof(state.banners[1].vertices));
-    std::memcpy(state.banners[1].texCoords, banner2_texCoords, sizeof(state.banners[1].texCoords));
+    std::memcpy(states[0].banners[1].vertices, banner2_vertices, sizeof(states[0].banners[1].vertices));
+    std::memcpy(states[0].banners[1].texCoords, banner2_texCoords, sizeof(states[0].banners[1].texCoords));
 
 
     // set program view, model, and projection matricies
@@ -281,7 +278,7 @@ void ProcessInput() {
         case SDL_KEYDOWN:
             switch (event.key.keysym.sym) {
             case SDLK_SPACE:
-                state.player.Jump(5.0f);
+                states[0].player.Jump(5.0f);
                 break;
 
             }
@@ -290,18 +287,18 @@ void ProcessInput() {
     }
 
     // reset player velocity to prevent continuous movement
-    state.player.velocity.x = 0;
+    states[0].player.velocity.x = 0;
 
     // Check for pressed/held keys below
     const Uint8* keys = SDL_GetKeyboardState(NULL);
 
     if (keys[SDL_SCANCODE_A]) {
-        state.player.velocity.x = -3.0f;
-        state.player.entityDir = LEFT;
+        states[0].player.velocity.x = -3.0f;
+        states[0].player.entityDir = LEFT;
     }
     else if (keys[SDL_SCANCODE_D]) {
-        state.player.velocity.x = 3.0f;
-        state.player.entityDir = RIGHT;
+        states[0].player.velocity.x = 3.0f;
+        states[0].player.entityDir = RIGHT;
     }
 }
 
@@ -325,7 +322,7 @@ void Update() {
     while (deltaTime >= FIXED_TIMESTEP) {
 
         // check if player lost
-        if (state.player.entityState == DEAD) {
+        if (states[0].player.entityState == DEAD) {
             gameLost = true;
         }
         else if (!start and liveCount == 0) {
@@ -333,41 +330,41 @@ void Update() {
         }
 
         // check and update player against enemies
-        state.player.Update(FIXED_TIMESTEP, state.enemies, ENEMY_COUNT);
+        states[0].player.Update(FIXED_TIMESTEP, states[0].enemies, ENEMY_COUNT);
  
 
         // check and update player against platforms
-        state.player.Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
+        states[0].player.Update(FIXED_TIMESTEP, states[0].platforms, PLATFORM_COUNT);
 
         // check and update enemies against platforms and player
         for (int i = 0; i < ENEMY_COUNT; i++) {
 
             // dont update if dead
-            if (state.enemies[i].entityState != DEAD) {
-                state.enemies[i].Update(FIXED_TIMESTEP, state.platforms, PLATFORM_COUNT);
+            if (states[0].enemies[i].entityState != DEAD) {
+                states[0].enemies[i].Update(FIXED_TIMESTEP, states[0].platforms, PLATFORM_COUNT);
             }
 
             // start autonomous routine for enemies
-            state.enemies[i].startWalk();
-            state.enemies[i].startJump();
+            states[0].enemies[i].startWalk();
+            states[0].enemies[i].startJump();
 
             // update enemey walking direction
-            if (state.enemies[i].sensorLeftCol and !state.enemies[i].sensorRightCol) {
-                state.enemies[i].entityDir = LEFT;
-                state.enemies[i].textureID = state.enemies[i].textures[0];
+            if (states[0].enemies[i].sensorLeftCol and !states[0].enemies[i].sensorRightCol) {
+                states[0].enemies[i].entityDir = LEFT;
+                states[0].enemies[i].textureID = states[0].enemies[i].textures[0];
             }
-            else if (!state.enemies[i].sensorLeftCol and state.enemies[i].sensorRightCol) {
-                state.enemies[i].entityDir = RIGHT;
-                state.enemies[i].textureID = state.enemies[i].textures[1];
+            else if (!states[0].enemies[i].sensorLeftCol and states[0].enemies[i].sensorRightCol) {
+                states[0].enemies[i].entityDir = RIGHT;
+                states[0].enemies[i].textureID = states[0].enemies[i].textures[1];
             }
         }
 
         // update player walking direction
-        if (state.player.entityDir == LEFT) {
-            state.player.textureID = state.player.textures[0];
+        if (states[0].player.entityDir == LEFT) {
+            states[0].player.textureID = states[0].player.textures[0];
         }
-        else if (state.player.entityDir == RIGHT) {
-            state.player.textureID = state.player.textures[1];
+        else if (states[0].player.entityDir == RIGHT) {
+            states[0].player.textureID = states[0].player.textures[1];
         }
 
         deltaTime -= FIXED_TIMESTEP;
@@ -375,12 +372,12 @@ void Update() {
 
     accumulator = deltaTime;
 
-    if (state.player.lifeLock) {
+    if (states[0].player.lifeLock) {
 
     
-    state.player.lives--;
-    state.player.position = startPosition;
-    state.player.lifeLock = false;
+    states[0].player.lives--;
+    states[0].player.position = startPosition;
+    states[0].player.lifeLock = false;
     }
 }
 
@@ -391,37 +388,40 @@ void Render() {
 
     if (gameWon) {
         //render won banner
-        state.banners[0].Render(&program);
+        states[0].banners[0].Render(&program);
     }
     else if (gameLost) {
         //render lost banner
-        state.banners[1].Render(&program);
+        states[0].banners[1].Render(&program);
     }
     else {
-
+        
         // render player
-        state.player.Render(&program);
+        states[0].player.Render(&program);
 
+        //GENERALIZE ALL OF THIS INTO A FUNCTION
+        /////////////////////////////////////////
         // render non-dead enemies
         liveCount = 0;
         for (int i = 0; i < ENEMY_COUNT; i++) {
-            if (state.enemies[i].entityState != DEAD) {
+            if (states[0].enemies[i].entityState != DEAD) {
                 start = false;
                 liveCount++;
-                state.enemies[i].Render(&program);
+                states[0].enemies[i].Render(&program);
             }
         }
 
         // render platforms
         for (int i = 0; i < PLATFORM_COUNT; i++) {
-            state.platforms[i].Render(&program);
+            states[0].platforms[i].Render(&program);
         }
+        /////////////////////////////////////////
     }
     // swap to new frame
     SDL_GL_SwapWindow(displayWindow);
 
     //DEBUG
-    std::cout << state.player.lives << "\n";
+    std::cout << states[0].player.lives << "\n";
 }
 
 
