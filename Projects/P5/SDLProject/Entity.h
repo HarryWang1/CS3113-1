@@ -26,7 +26,7 @@ enum EntityDir { LEFT, RIGHT };
 // class
 class Entity {
 public:
-    
+
     // entity state attributes
     EntityType entityType;
     EntityState entityState;
@@ -35,61 +35,61 @@ public:
     bool isStatic;
     bool isActive;
     int lives;
-    
+
     // entity physics attributes
     glm::vec3 startPosition;
     glm::vec3 position;
     glm::vec3 velocity;
     glm::vec3 acceleration;
     float speed;
-    
+
     // entity textures - holds multiple states of same texture
     GLuint textures[2];
-    
+
     // entity sensors
     glm::vec3 sensorLeft;
     glm::vec3 sensorRight;
-    
+
     // eneity size attributes
     float width;
     float height;
-    
+
     // texture
     GLuint textureID;
     float vertices[COORDS_SIZE];
     float texCoords[COORDS_SIZE];
-    
+
     // constructor
     Entity();
-    
+
     // player colliison functions
     bool CheckCollision(Entity* other);
-    void CheckCollisionsX(Entity *objects, int objectCount);
-    void CheckCollisionsY(Entity *objects, int objectCount);
-    
+    void CheckCollisionsX(Entity* objects, int objectCount);
+    void CheckCollisionsY(Entity* objects, int objectCount);
+
     // sensor collision functions
-    void CheckSensorLeft(Entity *platforms, int platCount);
-    void CheckSensorRight(Entity *platforms, int platCount);
-    
+    void CheckSensorLeft(Entity* platforms, int platCount);
+    void CheckSensorRight(Entity* platforms, int platCount);
+
     // update function
-    void Update(float deltaTime, Entity *objects, int objectCount);
-    
+    void Update(float deltaTime, Entity* objects, int objectCount);
+
     // render function
-    void Render(ShaderProgram *program);
-    
+    void Render(ShaderProgram* program);
+
     // jump function
     void Jump(float amt);
-    
+
     // player collision flags
     bool collidedTop;
     bool collidedBottom;
     bool collidedLeft;
     bool collidedRight;
-    
+
     // sensor collision flags
     bool sensorLeftCol;
     bool sensorRightCol;
-    
+
     // autonomous movement
     void startWalk();
     void startJump();
