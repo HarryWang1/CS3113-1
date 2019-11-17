@@ -193,6 +193,21 @@ void Entity::startJump() {
     }
 }
 
+void Entity::startAI(Entity player) {
+    if (entityType == ENEMY and entityState == AI) {
+        if (player.position.x < position.x) {
+            velocity.x = -1.0f;
+            entityDir = LEFT;
+        }
+        else {
+            
+            velocity.x = 1.0f;
+            entityDir = RIGHT;
+        }
+    }
+
+}
+
 
 // check this entity against other
 void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
@@ -229,13 +244,16 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
         Entity* other = &objects[i]; // this has to be a fucking pointer or else the entityState wont update - took me like 8 hours to realize
 
         // check if enemy has killed player
-        if ((entityType == PLAYER and other->entityType == ENEMY) and (collidedLeft or collidedRight)) {
-            if (lives > 0 ) {
+        if ((collidedLeft or collidedRight) and (entityType == PLAYER and other->entityType == ENEMY)) {
+            other->velocity.x = 0;
+            if (lives > 0) {
+            
+
                 lifeLock = true;
-                 
+
                 //set posiiton back to start
                 // this is subtracting multiple lives, probably due to updating for all the enemies at once fix later
-                
+
             }
             else {
                 entityState = DEAD;
@@ -243,14 +261,14 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
         }
 
         // check if player has killed enemy
-        if ((entityType == PLAYER and other->entityType == ENEMY) and (collidedBottom and other->collidedTop)) {
+        else if ((collidedBottom and other->collidedTop) and (entityType == PLAYER and other->entityType == ENEMY)) {
             playSmash();
             other->entityState = DEAD;
         }
     }
 }
 
-
+ 
 // render this entity using shade program
 void Entity::Render(ShaderProgram* program) {
     glm::mat4 modelMatrix = glm::mat4(1.0f);
