@@ -108,12 +108,12 @@ void Initialize() {
     state.player.entityType = PLAYER;
     state.player.isStatic = false;
     state.player.width = 1.0f;
-    state.player.position = glm::vec3(-4, 3, 0);
+    state.player.position = state.player.startPosition;
     state.player.sensorLeft = glm::vec3(state.player.position.x + 0.6f, state.player.position.y - 0.6f, 0);
     state.player.sensorRight = glm::vec3(state.player.position.x - 0.6f, state.player.position.y - 0.6f, 0);
     state.player.acceleration = glm::vec3(0, -9.81f, 0);
-    state.player.textures[0] = LoadTexture("player left.png");
-    state.player.textures[1] = LoadTexture("player right.png");
+    state.player.textures[0] = LoadTexture("player_left.png");
+    state.player.textures[1] = LoadTexture("player_right.png");
     state.player.textureID = state.player.textures[1];
     float player_vertices[]  = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
     float player_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
@@ -125,8 +125,8 @@ void Initialize() {
     
     
     // initialize enemy attributes
-    GLuint enemyLeft = LoadTexture("enemy left.png");
-    GLuint enemyRight = LoadTexture("enemy right.png");
+    GLuint enemyLeft = LoadTexture("enemy_left.png");
+    GLuint enemyRight = LoadTexture("enemy_right.png");
     for (int i = 0; i < ENEMY_COUNT; i++) {
         state.enemies[i].entityType = ENEMY;
         state.enemies[i].isStatic = false;
@@ -159,8 +159,8 @@ void Initialize() {
     
     
     //load platform textures
-    GLuint groundTextureID = LoadTexture("ground stone.png");
-    GLuint grassTextureID = LoadTexture("air stone.png");
+    GLuint groundTextureID = LoadTexture("ground_stone.png");
+    GLuint grassTextureID = LoadTexture("air_stone.png");
     
     
     // loop through and initialize ground platform
@@ -398,6 +398,9 @@ void Render() {
     }
     // swap to new frame
     SDL_GL_SwapWindow(displayWindow);
+    
+    //DEBUG
+    std::cout << state.player.lives << "\n";
 }
 
 

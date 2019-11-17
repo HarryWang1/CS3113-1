@@ -7,9 +7,11 @@ Entity::Entity()
     isStatic = true;
     isActive = true;
     position = glm::vec3(0);
+    startPosition = glm::vec3(-4, 3, 0);
     speed = 0;
     width = 1;
     height = 1;
+    lives = 6;
 }
 
 // check collisions
@@ -216,7 +218,15 @@ void Entity::Update(float deltaTime, Entity *objects, int objectCount) {
         
         // check if enemy has killed player
         if ((entityType == PLAYER and other->entityType == ENEMY) and (collidedLeft or collidedRight)) {
-            entityState = DEAD;
+            if (lives > 0) {
+                lives--;
+                //set posiiton back to start
+                // this is subtracting multiple lives, probably due to updating for all the enemies at once fix later
+                position = startPosition;
+            }
+            else{
+                entityState = DEAD;
+            }
         }
         
         // check if player has killed enemy

@@ -34,8 +34,10 @@ public:
     EntityType lastCollision;
     bool isStatic;
     bool isActive;
+    int lives;
     
     // entity physics attributes
+    glm::vec3 startPosition;
     glm::vec3 position;
     glm::vec3 velocity;
     glm::vec3 acceleration;
