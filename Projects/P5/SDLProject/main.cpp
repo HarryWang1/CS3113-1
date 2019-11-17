@@ -191,11 +191,11 @@ void Initialize() {
     // enemy states[0]
     states[0].enemies[0].entityState = STILL;
     states[0].enemies[1].entityState = WALKING;
-    states[0].enemies[2].entityState = WALKING;
+    states[0].enemies[2].entityState = AI;
     // enemy default direction
     states[0].enemies[0].entityDir = LEFT;
     states[0].enemies[1].entityDir = LEFT;
-    states[0].enemies[2].entityDir = RIGHT;
+    states[0].enemies[2].entityDir = AUTO;
     // enemy default texture
     states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
     states[0].enemies[1].textureID = states[0].enemies[1].textures[0];
@@ -387,6 +387,7 @@ void Update() {
             // start autonomous routine for enemies
             states[0].enemies[i].startWalk();
             states[0].enemies[i].startJump();
+            states[0].enemies[i].startAI(states[0].player);
 
             // update enemey walking direction
             if (states[0].enemies[i].sensorLeftCol and !states[0].enemies[i].sensorRightCol) {
@@ -396,6 +397,12 @@ void Update() {
             else if (!states[0].enemies[i].sensorLeftCol and states[0].enemies[i].sensorRightCol) {
                 states[0].enemies[i].entityDir = RIGHT;
                 states[0].enemies[i].textureID = states[0].enemies[i].textures[1];
+            }
+           else if (states[0].enemies[i].velocity.x > 0 and states[0].enemies[i].entityState==AI) {
+                states[0].enemies[i].textureID = states[0].enemies[i].textures[1];
+            }
+            else if (states[0].enemies[i].velocity.x < 0 and states[0].enemies[i].entityState == AI) {
+                states[0].enemies[i].textureID = states[0].enemies[i].textures[0];
             }
         }
 

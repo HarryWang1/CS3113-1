@@ -22,10 +22,10 @@
 enum  EntityType { PLAYER, ENEMY, PLATFORM };
 
 // entity state
-enum EntityState { STILL, WALKING, DEAD };
+enum EntityState { STILL, WALKING, DEAD,AI };
 
 // entity direction - which way the entity is facing defined by dirrection last moved
-enum EntityDir { LEFT, RIGHT };
+enum EntityDir { LEFT, RIGHT, AUTO};
 
 // class
 class Entity {
@@ -78,6 +78,7 @@ public:
 
     // update function
     void Update(float deltaTime, Entity* objects, int objectCount);
+    void Update(float deltaTime, Entity objects, int objectCount);
 
     // render function
     void Render(ShaderProgram* program);
@@ -98,6 +99,7 @@ public:
     // autonomous movement
     void startWalk();
     void startJump();
+    void startAI(Entity player);
 };
 
 
