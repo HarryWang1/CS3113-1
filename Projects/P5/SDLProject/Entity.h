@@ -5,6 +5,8 @@
 #include <GL/glew.h>
 #endif
 
+
+
 #include <SDL.h>
 #include <SDL_opengl.h>
 #include <SDL_image.h>
@@ -13,6 +15,8 @@
 #include "ShaderProgram.h"
 
 #define COORDS_SIZE 12 // size of array that stores texture coordinates
+
+
 
 // eneity types
 enum  EntityType { PLAYER, ENEMY, PLATFORM };
@@ -35,6 +39,7 @@ public:
     bool isStatic;
     bool isActive;
     int lives;
+    bool lifeLock = false;
 
     // entity physics attributes
     glm::vec3 startPosition;
