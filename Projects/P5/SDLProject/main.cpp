@@ -253,7 +253,7 @@ void Initialize() {
     states[0].enemies[0].entityDir = LEFT;
     states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
 
-    
+
     // level 2
     //enemy 1
     states[1].enemies[0].position = glm::vec3(4, 4, 0);
@@ -261,11 +261,11 @@ void Initialize() {
     states[1].enemies[0].entityDir = LEFT;
     states[1].enemies[0].textureID = states[0].enemies[0].textures[0];
 
-    
+
     // level 3
     // update player's position from default to the middle for this level
     states[2].player.position = glm::vec3(0, 4, 0);
-    
+
     //enemy 1
     states[2].enemies[0].position = glm::vec3(5, 4, 0);
     states[2].enemies[0].entityState = AI;
@@ -276,7 +276,7 @@ void Initialize() {
     states[2].enemies[1].entityState = AI;
     states[2].enemies[1].entityDir = RIGHT;
     states[2].enemies[1].textureID = states[0].enemies[0].textures[0];
-    
+
 
     //load platform attributes and textures
     GLuint groundTextureID = LoadTexture("ground_stone.png");
@@ -286,8 +286,8 @@ void Initialize() {
     for (int i = 0; i < LEVELS; i++) {
         initgPlatform(states[i].platforms, plat_textures[0]);
     }
-    
-    
+
+
     // air platforms in all levels
     //level 2
     float platform_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
@@ -299,8 +299,8 @@ void Initialize() {
         std::memcpy(states[1].platforms[i].vertices, platform_vertices, sizeof(states[1].platforms[i].vertices));
         std::memcpy(states[1].platforms[i].texCoords, platform_texCoords, sizeof(states[1].platforms[i].texCoords));
     }
-    
-    
+
+
     //level 3
     for (int i = 16; i < 20; i++) {
         states[2].platforms[i].entityType = PLATFORM;
@@ -309,8 +309,8 @@ void Initialize() {
         std::memcpy(states[2].platforms[i].vertices, platform_vertices, sizeof(states[2].platforms[i].vertices));
         std::memcpy(states[2].platforms[i].texCoords, platform_texCoords, sizeof(states[2].platforms[i].texCoords));
     }
-    
-    
+
+
     // init banner textures for all levels
     GLuint startBannerID = LoadTexture("start.png");
     GLuint winBannerID = LoadTexture("win.png");
@@ -390,7 +390,7 @@ void ProcessInput() {
 
     // Check for pressed/held keys below
     const Uint8* keys = SDL_GetKeyboardState(NULL);
-    
+
     // if A key is help down
     if (keys[SDL_SCANCODE_A]) {
         states[currentLevel].player.velocity.x = -3.0f;
@@ -428,7 +428,7 @@ void Update() {
         }
         // check if all enemies are dead, liveCount is non-dead enemy count in game
         else if (!start and liveCount == 0) {
-            
+
             // check if we're at the last level
             if (currentLevel + 1 < LEVELS) {
                 currentLevel++;
@@ -438,7 +438,7 @@ void Update() {
                 gameWon = true;
                 return;
             }
-            
+
         }
 
         // check and update player against enemies
@@ -546,21 +546,21 @@ void Shutdown() {
 
 // main
 int main(int argc, char* argv[]) {
-    
+
     // initialize game
     Initialize();
 
     // master game loop
     while (gameIsRunning) {
         ProcessInput();
-        
+
         // dont update game while we're at start screen
         if (startMenu) {
             states[currentLevel].banners[0].Render(&program);
         }
         else {
             Update();
-            
+
         }
         Render();
     }

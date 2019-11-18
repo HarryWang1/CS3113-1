@@ -163,8 +163,7 @@ void Entity::Jump(float amt)
         velocity.y = amt;
     }
 }
-
-// play smash sound
+ 
 void playSmash() {
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
     Mix_Chunk* SoundCrush = Mix_LoadWAV("RockSmash.wav");
@@ -191,20 +190,27 @@ void Entity::startJump() {
     if (entityType == ENEMY and entityState == STILL) {
         // do jump routine
         Jump(2.0f);
+         
     }
 }
 
-// starts autonomous walking routine with player tracking
 void Entity::startAI(Entity player) {
     if (entityType == ENEMY and entityState == AI) {
-        if (player.position.x < position.x) {
-            velocity.x = -1.0f;
-            entityDir = LEFT;
+     
+        if (abs(player.position.y - position.y )< 2 && abs(player.position.x - position.x) <5.5) {
+
+            if (player.position.x < position.x) {
+                velocity.x = -1.0f;
+                entityDir = LEFT;
+            }
+            else {
+
+                velocity.x = 1.0f;
+                entityDir = RIGHT;
+            }
         }
         else {
-            
-            velocity.x = 1.0f;
-            entityDir = RIGHT;
+            velocity.x = 0;
         }
     }
 
@@ -249,8 +255,13 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
         if ((collidedLeft or collidedRight) and (entityType == PLAYER and other->entityType == ENEMY)) {
             other->velocity.x = 0;
             if (lives > 0) {
-                // lock keeps the player life count stable due to updating constantly
+            
+
                 lifeLock = true;
+
+                //set posiiton back to start
+                // this is subtracting multiple lives, probably due to updating for all the enemies at once fix later
+
             }
             else {
                 entityState = DEAD;
