@@ -34,7 +34,7 @@ int currentLevel = 0; // level count starts from zero for reasons ;^)
 
 
 // define level count
-#define LEVELS 1
+#define LEVELS 3
 
 // define MAX platforms per level
 #define MAX_PLAT 80
@@ -52,7 +52,7 @@ int liveCount = 0;
 
 
 // define enemy count for each level in the game
-int enemyCount[LEVELS] = { 1 };
+int enemyCount[LEVELS] = { 1, 2, 3 };
 
 
 //define GameState object - will keep track of objects in the game
@@ -184,15 +184,15 @@ void initBanner(Entity* banners, GLuint* textures) {
 
     // initialize win banner attributes
     banners[1].isStatic = true;
-    banners[1].textureID = textures[0];
+    banners[1].textureID = textures[1];
     float banner1_vertices[] = { -2.5, -0.25, 2.5, -0.25, 2.5, 0.25, -2.5, -0.25, 2.5, 0.25, -2.5, 0.25 };
     float banner1_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     std::memcpy(banners[1].vertices, banner1_vertices, sizeof(banners[1].vertices));
     std::memcpy(banners[1].texCoords, banner1_texCoords, sizeof(banners[1].texCoords));
 
     // initialize lose banner attributes
-    banners[1].isStatic = true;
-    banners[1].textureID = textures[1];
+    banners[2].isStatic = true;
+    banners[2].textureID = textures[2];
     float banner2_vertices[] = { -2.5, -0.25, 2.5, -0.25, 2.5, 0.25, -2.5, -0.25, 2.5, 0.25, -2.5, 0.25 };
     float banner2_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
     std::memcpy(banners[2].vertices, banner2_vertices, sizeof(banners[2].vertices));
