@@ -164,6 +164,7 @@ void Entity::Jump(float amt)
     }
 }
 
+// play smash sound
 void playSmash() {
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
     Mix_Chunk* SoundCrush = Mix_LoadWAV("RockSmash.wav");
@@ -193,6 +194,7 @@ void Entity::startJump() {
     }
 }
 
+// starts autonomous walking routine with player tracking
 void Entity::startAI(Entity player) {
     if (entityType == ENEMY and entityState == AI) {
         if (player.position.x < position.x) {
@@ -247,6 +249,7 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
         if ((collidedLeft or collidedRight) and (entityType == PLAYER and other->entityType == ENEMY)) {
             other->velocity.x = 0;
             if (lives > 0) {
+                // lock keeps the player life count stable due to updating constantly
                 lifeLock = true;
             }
             else {
