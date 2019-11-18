@@ -26,6 +26,7 @@ glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 
 //variables for game state
 bool gameIsRunning = true;
+bool startMenu = true;
 bool gameWon = false;
 bool gameLost = false;
 glm::vec3 startPosition = glm::vec3(-4, 3, 0);
@@ -42,7 +43,7 @@ int currentLevel = 0; // level count starts from zero for reasons ;^)
 #define MAX_ENEMY 3
 
 // define MAX banner per level
-#define MAX_BANNER 2
+#define MAX_BANNER 3
 
 
 // define live enemy count for game and helper flag
@@ -51,7 +52,7 @@ int liveCount = 0;
 
 
 // define enemy count for each level in the game
-int enemyCount[LEVELS] = {1};
+int enemyCount[LEVELS] = { 1 };
 
 
 //define GameState object - will keep track of objects in the game
@@ -61,22 +62,22 @@ struct GameState {
 
     // game platforms - 80 = (640/64) * ceil(480/64) - maximum tiles of 64 pixels in screen
     Entity platforms[MAX_PLAT];
-    
+
     // game platform locations
     glm::vec3 platform_loc[MAX_PLAT];
 
     // enemies
     Entity enemies[MAX_ENEMY];
-    
+
     // enemy locations
     glm::vec3 enemy_loc[MAX_ENEMY];
-    
+
     // enemy states
     EntityState enemy_state[MAX_ENEMY];
-    
+
     // enemy directions
     EntityDir enemy_dir[MAX_ENEMY];
-    
+
     // banners - menu, win, lost, etc.
     Entity banners[MAX_BANNER];
 };
@@ -95,7 +96,7 @@ GLuint LoadTexture(const char* filePath) {
         std::cout << "Unable to load image. Make sure the path is correct\n";
         assert(false);
     }
-    
+
     GLuint textureID;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
@@ -112,7 +113,7 @@ GLuint LoadTexture(const char* filePath) {
 
 // define player initialization function
 void initPlayer(Entity* player) {
-    
+
     // initialize player attributes
     player->entityType = PLAYER;
     player->isStatic = false;
@@ -134,7 +135,7 @@ void initPlayer(Entity* player) {
 
 // define enemy initialization function
 void initEnemy(Entity* enemies, GLuint* textures, int enemy_count) {
-    
+
     for (int i = 0; i < enemy_count; i++) {
         // initialize enemy attributes
         enemies[i].entityType = ENEMY;
@@ -155,7 +156,7 @@ void initEnemy(Entity* enemies, GLuint* textures, int enemy_count) {
 
 // define ground platform initialization function
 void initgPlatform(Entity* platforms, GLuint texture) {
-    
+
     // loop through and initialize ground platform
     float platform_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
     float platform_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
@@ -172,29 +173,37 @@ void initgPlatform(Entity* platforms, GLuint texture) {
 
 // define banner initialization function
 void initBanner(Entity* banners, GLuint* textures) {
-    
-    // initialize win banner attributes
+
+    // initialize Start banner attributes
     banners[0].isStatic = true;
     banners[0].textureID = textures[0];
+    float banner0_vertices[] = { -5.0, -2.0, 5.0, -2.0, 5.0, 2.0, -5.0, -2.0, 5.0, 2.0, -5.0, 2.0 };
+    float banner0_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    std::memcpy(banners[0].vertices, banner0_vertices, sizeof(banners[0].vertices));
+    std::memcpy(banners[0].texCoords, banner0_texCoords, sizeof(banners[0].texCoords));
+
+    // initialize win banner attributes
+    banners[1].isStatic = true;
+    banners[1].textureID = textures[0];
     float banner1_vertices[] = { -2.5, -0.25, 2.5, -0.25, 2.5, 0.25, -2.5, -0.25, 2.5, 0.25, -2.5, 0.25 };
     float banner1_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    std::memcpy(banners[0].vertices, banner1_vertices, sizeof(banners[0].vertices));
-    std::memcpy(banners[0].texCoords, banner1_texCoords, sizeof(banners[0].texCoords));
-    
+    std::memcpy(banners[1].vertices, banner1_vertices, sizeof(banners[1].vertices));
+    std::memcpy(banners[1].texCoords, banner1_texCoords, sizeof(banners[1].texCoords));
+
     // initialize lose banner attributes
     banners[1].isStatic = true;
     banners[1].textureID = textures[1];
     float banner2_vertices[] = { -2.5, -0.25, 2.5, -0.25, 2.5, 0.25, -2.5, -0.25, 2.5, 0.25, -2.5, 0.25 };
     float banner2_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    std::memcpy(banners[1].vertices, banner2_vertices, sizeof(banners[1].vertices));
-    std::memcpy(banners[1].texCoords, banner2_texCoords, sizeof(banners[1].texCoords));
+    std::memcpy(banners[2].vertices, banner2_vertices, sizeof(banners[2].vertices));
+    std::memcpy(banners[2].texCoords, banner2_texCoords, sizeof(banners[2].texCoords));
 }
 
 
 
 // define initialize function
 void Initialize() {
-    
+
     // init Audio/Video
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Init(SDL_INIT_AUDIO);
@@ -202,7 +211,7 @@ void Initialize() {
     Mix_Music* music;
     music = Mix_LoadMUS("bgMusic.wav");
     Mix_PlayMusic(music, -1);
-    
+
     // init display window
     displayWindow = SDL_CreateWindow("AI!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
@@ -217,50 +226,51 @@ void Initialize() {
 
     // load texture shader
     program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
-    
-    
+
+
     // initialize player in all levels
     for (int i = 0; i < LEVELS; i++) {
         Entity* player = &(states[i].player);
         initPlayer(player);
     }
-    
+
 
     // initialize enemy entities in all levels
     GLuint enemyLeft = LoadTexture("enemy_left.png");
     GLuint enemyRight = LoadTexture("enemy_right.png");
     for (int i = 0; i < LEVELS; i++) {
-        GLuint enemy_textures[2] = {enemyLeft, enemyRight};
+        GLuint enemy_textures[2] = { enemyLeft, enemyRight };
         initEnemy(states[i].enemies, enemy_textures, enemyCount[i]);
     }
-    
+
     // initlize some other enemy ettributes
     // level 1
     states[0].enemies[0].position = glm::vec3(4, 4, 0);
     states[0].enemies[0].entityState = STILL;
     states[0].enemies[0].entityDir = LEFT;
     states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
-    
+
     // level 2
     // level 3
 
-    
+
     //load platform textures
     GLuint groundTextureID = LoadTexture("ground_stone.png");
     GLuint airTextureID = LoadTexture("air_stone.png");
     // initialize ground platform in all levels
     for (int i = 0; i < LEVELS; i++) {
-        GLuint plat_textures[2] = {groundTextureID, airTextureID};
+        GLuint plat_textures[2] = { groundTextureID, airTextureID };
         initgPlatform(states[i].platforms, plat_textures[0]);
     }
-    
-    
+
+
     //load banner textures
+    GLuint startBannerID = LoadTexture("start.png");
     GLuint winBannerID = LoadTexture("win.png");
     GLuint loseBannerID = LoadTexture("lost.png");
     // initialize banners in all levels
     for (int i = 0; i < LEVELS; i++) {
-        GLuint banner_textures[2] = {winBannerID, loseBannerID};
+        GLuint banner_textures[3] = { startBannerID,winBannerID, loseBannerID };
         initBanner(states[i].banners, banner_textures);
     }
 
@@ -290,6 +300,13 @@ void Initialize() {
     glClearColor(0.2f, 0.1f, 0.2f, 1.0f);
 }
 
+void playJump() {
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+    Mix_Chunk* SoundCrush = Mix_LoadWAV("jumping.wav");
+    Mix_PlayChannel(-1, SoundCrush, 0);
+    Mix_VolumeChunk(SoundCrush, MIX_MAX_VOLUME / 8);
+}
+
 
 // define input function
 void ProcessInput() {
@@ -305,7 +322,14 @@ void ProcessInput() {
             switch (event.key.keysym.sym) {
             case SDLK_SPACE:
                 states[currentLevel].player.Jump(5.0f);
+                playJump();
                 break;
+
+            case SDLK_RSHIFT:
+                if (startMenu) {
+                    startMenu = false;
+                    gameIsRunning = true;
+                }
 
             }
             break;
@@ -328,6 +352,7 @@ void ProcessInput() {
     }
 }
 
+ 
 
 // define update function
 #define FIXED_TIMESTEP 0.0166666f
@@ -357,7 +382,7 @@ void Update() {
 
         // check and update player against enemies
         states[currentLevel].player.Update(FIXED_TIMESTEP, states[currentLevel].enemies, 3);
- 
+
 
         // check and update player against platforms
         states[currentLevel].player.Update(FIXED_TIMESTEP, states[currentLevel].platforms, 16);
@@ -384,7 +409,7 @@ void Update() {
                 states[currentLevel].enemies[i].entityDir = RIGHT;
                 states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[1];
             }
-           else if (states[currentLevel].enemies[i].velocity.x > 0 and states[currentLevel].enemies[i].entityState==AI) {
+            else if (states[currentLevel].enemies[i].velocity.x > 0 and states[currentLevel].enemies[i].entityState == AI) {
                 states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[1];
             }
             else if (states[currentLevel].enemies[i].velocity.x < 0 and states[currentLevel].enemies[i].entityState == AI) {
@@ -407,9 +432,9 @@ void Update() {
 
     // control count of player lives left
     if (states[currentLevel].player.lifeLock) {
-    states[currentLevel].player.lives--;
-    states[currentLevel].player.position = startPosition;
-    states[currentLevel].player.lifeLock = false;
+        states[currentLevel].player.lives--;
+        states[currentLevel].player.position = startPosition;
+        states[currentLevel].player.lifeLock = false;
     }
 }
 
@@ -418,18 +443,22 @@ void Update() {
 void Render() {
     glClear(GL_COLOR_BUFFER_BIT);
 
+    if (startMenu) {
+        //render Start banner
+        states[currentLevel].banners[0].Render(&program);
+    }
     if (gameWon) {
         //render won banner
-        states[currentLevel].banners[0].Render(&program);
+        states[currentLevel].banners[1].Render(&program);
     }
     else if (gameLost) {
         //render lost banner
-        states[currentLevel].banners[1].Render(&program);
+        states[currentLevel].banners[2].Render(&program);
     }
     else {
         // render player
         states[currentLevel].player.Render(&program);
-        
+
         // render non-dead enemies in current level
         liveCount = 0;
         for (int i = 0; i < enemyCount[currentLevel]; i++) {
@@ -446,7 +475,7 @@ void Render() {
         }
 
     }
-    
+
     // swap to new frame
     SDL_GL_SwapWindow(displayWindow);
 
@@ -463,11 +492,17 @@ void Shutdown() {
 // main
 int main(int argc, char* argv[]) {
     Initialize();
-    
+
     // master game loop
     while (gameIsRunning) {
         ProcessInput();
-        Update();
+        if (startMenu) {
+            states[currentLevel].banners[0].Render(&program);
+        }
+        else {
+            Update();
+            
+        }
         Render();
     }
 
