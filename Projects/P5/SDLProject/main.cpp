@@ -52,7 +52,7 @@ int liveCount = 0;
 
 
 // define enemy count for each level in the game
-int enemyCount[LEVELS] = { 1, 2, 3 };
+int enemyCount[LEVELS] = { 1, 1, 1 };
 
 
 //define GameState object - will keep track of objects in the game
@@ -251,7 +251,17 @@ void Initialize() {
     states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
 
     // level 2
+    states[1].enemies[0].position = glm::vec3(4, 4, 0);
+    states[1].enemies[0].entityState = STILL;
+    states[1].enemies[0].entityDir = LEFT;
+    states[1].enemies[0].textureID = states[0].enemies[0].textures[0];
+
     // level 3
+    states[2].enemies[0].position = glm::vec3(4, 4, 0);
+    states[2].enemies[0].entityState = STILL;
+    states[2].enemies[0].entityDir = LEFT;
+    states[2].enemies[0].textureID = states[0].enemies[0].textures[0];
+    
 
 
     //load platform textures
@@ -376,23 +386,36 @@ void Update() {
         if (states[currentLevel].player.entityState == DEAD) {
             gameLost = true;
         }
+        // liveCount is non-dead enemy count in game, check if all enemies are dead
         else if (!start and liveCount == 0) {
-            gameWon = true;
+            std:: cout << "Evaluating" << "\n";
+            // check if we're at the last level
+            if (currentLevel < LEVELS) {
+                states[currentLevel].player.lives = states[currentLevel - 1].player.lives;
+                currentLevel++;
+                std:: cout << "LEVEL " << currentLevel + 1 << "\n";
+            }
+            else {
+                gameWon = true;
+                std:: cout << "GAME WON" << "\n";
+                return;
+            }
+            
         }
 
         // check and update player against enemies
-        states[currentLevel].player.Update(FIXED_TIMESTEP, states[currentLevel].enemies, 3);
+        states[currentLevel].player.Update(FIXED_TIMESTEP, states[currentLevel].enemies, enemyCount[currentLevel]);
 
 
         // check and update player against platforms
-        states[currentLevel].player.Update(FIXED_TIMESTEP, states[currentLevel].platforms, 16);
+        states[currentLevel].player.Update(FIXED_TIMESTEP, states[currentLevel].platforms, MAX_PLAT);
 
         // check and update all enemies in current level against platforms and player
         for (int i = 0; i < enemyCount[currentLevel]; i++) {
 
             // dont update if dead
             if (states[currentLevel].enemies[i].entityState != DEAD) {
-                states[currentLevel].enemies[i].Update(FIXED_TIMESTEP, states[currentLevel].platforms, 16);
+                states[currentLevel].enemies[i].Update(FIXED_TIMESTEP, states[currentLevel].platforms, MAX_PLAT);
             }
 
             // start autonomous routine for enemies
@@ -478,9 +501,6 @@ void Render() {
 
     // swap to new frame
     SDL_GL_SwapWindow(displayWindow);
-
-    //DEBUG
-    std::cout << states[currentLevel].player.lives << "\n";
 }
 
 
@@ -491,6 +511,8 @@ void Shutdown() {
 
 // main
 int main(int argc, char* argv[]) {
+    
+    // initialize game
     Initialize();
 
     // master game loop

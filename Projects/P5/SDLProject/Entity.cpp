@@ -247,13 +247,7 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
         if ((collidedLeft or collidedRight) and (entityType == PLAYER and other->entityType == ENEMY)) {
             other->velocity.x = 0;
             if (lives > 0) {
-            
-
                 lifeLock = true;
-
-                //set posiiton back to start
-                // this is subtracting multiple lives, probably due to updating for all the enemies at once fix later
-
             }
             else {
                 entityState = DEAD;
