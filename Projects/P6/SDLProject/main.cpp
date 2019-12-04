@@ -281,8 +281,8 @@ GLuint Initialize() {
     program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
 
     // initialize player
-    GLuint playerLeftID = LoadTexture("player_left.png");
-    GLuint playerRightID = LoadTexture("player_right.png");
+    GLuint playerLeftID = LoadTexture("olive.png");
+    GLuint playerRightID = LoadTexture("olive2.png");
     GLuint player_textures[2] = { playerLeftID, playerRightID };
     initPlayer(&player, player_textures);
 
@@ -390,7 +390,7 @@ GLuint Initialize() {
 
 
     // sets background color
-    glClearColor(0.2f, 0.1f, 0.2f, 1.0f);
+ glClearColor(0.2f, 0.7f, 0.5f, 1.0f);
     
     return groundTextureID;
 }
