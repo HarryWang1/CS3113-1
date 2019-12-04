@@ -36,7 +36,7 @@ int currentLevel = 0; // level count starts from zero for reasons ;^)
 // define level count
 #define LEVELS 3
 
-// define MAX platforms per level
+// define MAX barrier count per level
 #define MAX_PLAT 80
 
 // define MAX enemies per level
@@ -155,19 +155,49 @@ void initEnemy(Entity* enemies, GLuint* textures, int enemy_count) {
 
 
 
-// define ground platform initialization function
+// define ground & side barrier initialization function
 void initgPlatform(Entity* platforms, GLuint texture) {
 
-    // loop through and initialize ground platform
+    // loop through and initialize ground & side barriers
     float platform_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
     float platform_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    for (int i = 0; i < 10; i++) {
+    
+    // build bottom barrier
+    int offset = 8;
+    for (int i = 0; i < 8; i++) {
         platforms[i].entityType = PLATFORM;
         platforms[i].textureID = texture;
         platforms[i].position = glm::vec3(i - 4.5f, -3.5f, 0);
         std::memcpy(platforms[i].vertices, platform_vertices, sizeof(platforms[i].vertices));
         std::memcpy(platforms[i].texCoords, platform_texCoords, sizeof(platforms[i].texCoords));
     }
+    // build top barrier
+    for (int i = offset; i < (8 + offset); i++) {
+        platforms[i].entityType = PLATFORM;
+        platforms[i].textureID = texture;
+        platforms[i].position = glm::vec3(4.5f - (i - offset), 3.5f, 0);
+        std::memcpy(platforms[i].vertices, platform_vertices, sizeof(platforms[i].vertices));
+        std::memcpy(platforms[i].texCoords, platform_texCoords, sizeof(platforms[i].texCoords));
+    }
+    
+    // build right barrier
+    for (int i = (offset*2); i < (5 + (offset*2)); i++) {
+        platforms[i].entityType = PLATFORM;
+        platforms[i].textureID = texture;
+        platforms[i].position = glm::vec3(4.5f, -1.5f + (i - (offset*2)), 0);
+        std::memcpy(platforms[i].vertices, platform_vertices, sizeof(platforms[i].vertices));
+        std::memcpy(platforms[i].texCoords, platform_texCoords, sizeof(platforms[i].texCoords));
+    }
+    
+    // build left barrier
+    for (int i = (offset*3); i < (5 + (offset*3)); i++) {
+        platforms[i].entityType = PLATFORM;
+        platforms[i].textureID = texture;
+        platforms[i].position = glm::vec3(-4.5f, -2.5f + (i - (offset*3)), 0);
+        std::memcpy(platforms[i].vertices, platform_vertices, sizeof(platforms[i].vertices));
+        std::memcpy(platforms[i].texCoords, platform_texCoords, sizeof(platforms[i].texCoords));
+    }
+    
 }
 
 
@@ -238,44 +268,44 @@ void Initialize() {
     }
 
     // initialize enemy entities in all levels
-    GLuint enemyLeft = LoadTexture("enemy_left.png");
-    GLuint enemyRight = LoadTexture("enemy_right.png");
-    GLuint enemy_textures[2] = { enemyLeft, enemyRight };
-    for (int i = 0; i < LEVELS; i++) {
-        initEnemy(states[i].enemies, enemy_textures, enemyCount[i]);
-    }
+//    GLuint enemyLeft = LoadTexture("enemy_left.png");
+//    GLuint enemyRight = LoadTexture("enemy_right.png");
+//    GLuint enemy_textures[2] = { enemyLeft, enemyRight };
+//    for (int i = 0; i < LEVELS; i++) {
+//        initEnemy(states[i].enemies, enemy_textures, enemyCount[i]);
+//    }
 
-    // initlize some other enemy ettributes
-    // level 1
-    //enemy 1
-    states[0].enemies[0].position = glm::vec3(4, 4, 0);
-    states[0].enemies[0].entityState = STILL;
-    states[0].enemies[0].entityDir = LEFT;
-    states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
-
-
-    // level 2
-    //enemy 1
-    states[1].enemies[0].position = glm::vec3(4, 4, 0);
-    states[1].enemies[0].entityState = WALKING;
-    states[1].enemies[0].entityDir = LEFT;
-    states[1].enemies[0].textureID = states[0].enemies[0].textures[0];
-
-
-    // level 3
-    // update player's position from default to the middle for this level
-    states[2].player.position = glm::vec3(0, 4, 0);
-
-    //enemy 1
-    states[2].enemies[0].position = glm::vec3(5, 4, 0);
-    states[2].enemies[0].entityState = AI;
-    states[2].enemies[0].entityDir = LEFT;
-    states[2].enemies[0].textureID = states[0].enemies[0].textures[0];
-    //enemy 2
-    states[2].enemies[1].position = glm::vec3(-5, 4, 0);
-    states[2].enemies[1].entityState = AI;
-    states[2].enemies[1].entityDir = RIGHT;
-    states[2].enemies[1].textureID = states[0].enemies[0].textures[0];
+//    // initlize some other enemy ettributes
+//    // level 1
+//    //enemy 1
+//    states[0].enemies[0].position = glm::vec3(4, 4, 0);
+//    states[0].enemies[0].entityState = STILL;
+//    states[0].enemies[0].entityDir = LEFT;
+//    states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
+//
+//
+//    // level 2
+//    //enemy 1
+//    states[1].enemies[0].position = glm::vec3(4, 4, 0);
+//    states[1].enemies[0].entityState = WALKING;
+//    states[1].enemies[0].entityDir = LEFT;
+//    states[1].enemies[0].textureID = states[0].enemies[0].textures[0];
+//
+//
+//    // level 3
+//    // update player's position from default to the middle for this level
+//    states[2].player.position = glm::vec3(0, 4, 0);
+//
+//    //enemy 1
+//    states[2].enemies[0].position = glm::vec3(5, 4, 0);
+//    states[2].enemies[0].entityState = AI;
+//    states[2].enemies[0].entityDir = LEFT;
+//    states[2].enemies[0].textureID = states[0].enemies[0].textures[0];
+//    //enemy 2
+//    states[2].enemies[1].position = glm::vec3(-5, 4, 0);
+//    states[2].enemies[1].entityState = AI;
+//    states[2].enemies[1].entityDir = RIGHT;
+//    states[2].enemies[1].textureID = states[0].enemies[0].textures[0];
 
 
     //load platform attributes and textures
