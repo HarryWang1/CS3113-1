@@ -32,15 +32,15 @@ bool gameIsRunning = true;
 bool startMenu = true;
 bool gameWon = false;
 bool gameLost = false;
-glm::vec3 startPosition = glm::vec3(-4, 3, 0);
+glm::vec3 startPosition = glm::vec3(0, 0, 0);
 int currentLevel = 0; // level count starts from zero for reasons ;^)
 
 
 // define level count
-#define LEVELS 2
+#define LEVELS 3
 
 // define MAX barrier count per level
-#define MAX_PLAT 80
+#define MAX_PLAT 8000
 
 // define MAX enemies per level
 #define MAX_ENEMY 3
@@ -57,7 +57,7 @@ bool start = true;
 int platCount = 0;
 
 // define enemy count for each level in the game
-int enemyCount[LEVELS] = { 1, 1 };
+int enemyCount[LEVELS] = { 1, 1, 1};
 
 // original view matrix as list
 float scaleFactor = 1.50f;
@@ -70,9 +70,6 @@ Entity player;
 // game barriers - 80 = (640/64) * ceil(480/64) - maximum tiles of (64x64) pixels in screen
 Entity platforms[MAX_PLAT];
 
-
-// game platform locations
-glm::vec3 platform_loc[MAX_PLAT];
 
 // banners - menu, win, lost, etc.
 Entity banners[MAX_BANNER];
@@ -155,7 +152,6 @@ void initEnemy(Entity* enemies, GLuint* textures, int enemy_count) {
         enemies[i].isStatic = false;
         enemies[i].width = 1.0f;
         enemies[i].acceleration = glm::vec3(0, 0, 0);
-        enemies[i].acceleration = glm::vec3(0, 0, 0);
         enemies[i].textures[0] = textures[0];
         enemies[i].textures[1] = textures[1];
         float enemy_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
@@ -177,8 +173,8 @@ void initgPlatform(Entity* platforms, GLuint texture, int currentLevel) {
     int range = 8;
     float posScale = 1.0f;
     if (currentLevel > 0) {
-        range = range * currentLevel * scaleFactor;
-        posScale = scaleFactor;
+        posScale = pow(scaleFactor, currentLevel);
+        range = range * posScale;
     }
 
     // build bottom barrier
@@ -202,24 +198,24 @@ void initgPlatform(Entity* platforms, GLuint texture, int currentLevel) {
     }
 
     // build right barrier
-//    for (int i = (offset * 2); i < (5 + (offset * 2)); i++) {
-//        platforms[i].entityType = PLATFORM;
-//        platforms[i].textureID = texture;
-//        platforms[i].position = glm::vec3(4.5f, -1.5f + (i - (offset * 2)), 0);
-//        std::memcpy(platforms[i].vertices, platform_vertices, sizeof(platforms[i].vertices));
-//        std::memcpy(platforms[i].texCoords, platform_texCoords, sizeof(platforms[i].texCoords));
-//        platCount++;
-//    }
+    for (int i = (range * 2); i < (range * 3); i++) {
+        platforms[i].entityType = PLATFORM;
+        platforms[i].textureID = texture;
+        platforms[i].position = glm::vec3(4.5f * posScale, (3.5f * posScale) - (i - (range * 2)), 0);
+        std::memcpy(platforms[i].vertices, platform_vertices, sizeof(platforms[i].vertices));
+        std::memcpy(platforms[i].texCoords, platform_texCoords, sizeof(platforms[i].texCoords));
+        platCount++;
+    }
 
     // build left barrier
-//    for (int i = (offset * 3); i < (5 + (offset * 3)); i++) {
-//        platforms[i].entityType = PLATFORM;
-//        platforms[i].textureID = texture;
-//        platforms[i].position = glm::vec3(-4.5f, -2.5f + (i - (offset * 3)), 0);
-//        std::memcpy(platforms[i].vertices, platform_vertices, sizeof(platforms[i].vertices));
-//        std::memcpy(platforms[i].texCoords, platform_texCoords, sizeof(platforms[i].texCoords));
-//        platCount++;
-//    }
+   for (int i = (range * 3); i < (range * 4); i++) {
+        platforms[i].entityType = PLATFORM;
+        platforms[i].textureID = texture;
+        platforms[i].position = glm::vec3(-4.5f * posScale, (-3.5 * posScale) + (i - (range * 3)), 0);
+        std::memcpy(platforms[i].vertices, platform_vertices, sizeof(platforms[i].vertices));
+        std::memcpy(platforms[i].texCoords, platform_texCoords, sizeof(platforms[i].texCoords));
+        platCount++;
+    }
 
 }
 
@@ -328,7 +324,7 @@ GLuint Initialize() {
 
 
     //load platform attributes and textures
-    GLuint groundTextureID = LoadTexture("ground_stone.png");
+    GLuint groundTextureID = LoadTexture("tdGrass.png");
     //GLuint airTextureID = LoadTexture("air_stone.png");
     //GLuint plat_textures[2] = { groundTextureID, airTextureID };
     // initialize ground platform in all levels
@@ -525,9 +521,9 @@ void Update(GLuint groundTextureID) {
             }
 
             // start autonomous routine for enemies
-            states[currentLevel].enemies[i].startWalk();
-            states[currentLevel].enemies[i].startJump();
-            states[currentLevel].enemies[i].startAI(player);
+            //states[currentLevel].enemies[i].startWalk();
+            //states[currentLevel].enemies[i].startJump();
+            //states[currentLevel].enemies[i].startAI(player);
 
             // update enemey walking direction and texture that corresponds with it
             if (states[currentLevel].enemies[i].sensorLeftCol and !states[currentLevel].enemies[i].sensorRightCol) {

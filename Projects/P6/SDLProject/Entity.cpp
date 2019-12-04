@@ -10,7 +10,7 @@ Entity::Entity()
     isStatic = true;
     isActive = true;
     position = glm::vec3(0);
-    startPosition = glm::vec3(-4, 3, 0);
+    startPosition = glm::vec3(-3.5, 3, 0);
     speed = 0;
     width = 1;
     height = 1;
