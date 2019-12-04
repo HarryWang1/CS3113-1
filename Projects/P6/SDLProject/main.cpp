@@ -54,6 +54,7 @@ int liveCount = 0;
 // define enemy count for each level in the game
 int enemyCount[LEVELS] = { 1, 1, 2 };
 
+float vmConst[4] = { -5.0f, 5.0f, -3.75f, 3.75f };
 
 //define GameState object - will keep track of objects in the game
 struct GameState {
@@ -122,7 +123,7 @@ void initPlayer(Entity* player, GLuint* textures) {
     player->entityDir = RIGHT;
     player->sensorLeft = glm::vec3(player->position.x + 0.6f, player->position.y - 0.6f, 0);
     player->sensorRight = glm::vec3(player->position.x - 0.6f, player->position.y - 0.6f, 0);
-    player->acceleration = glm::vec3(0, -9.81f, 0);
+    player->acceleration = glm::vec3(0, 0, 0);
     player->textures[0] = textures[0];
     player->textures[1] = textures[1];
     player->textureID = player->textures[1];
@@ -142,8 +143,8 @@ void initEnemy(Entity* enemies, GLuint* textures, int enemy_count) {
         enemies[i].entityType = ENEMY;
         enemies[i].isStatic = false;
         enemies[i].width = 1.0f;
-        enemies[i].acceleration = glm::vec3(0, -9.81f, 0);
-        enemies[i].acceleration = glm::vec3(0, -9.81f, 0);
+        enemies[i].acceleration = glm::vec3(0, 0, 0);
+        enemies[i].acceleration = glm::vec3(0, 0, 0);
         enemies[i].textures[0] = textures[0];
         enemies[i].textures[1] = textures[1];
         float enemy_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
@@ -161,7 +162,7 @@ void initgPlatform(Entity* platforms, GLuint texture) {
     // loop through and initialize ground & side barriers
     float platform_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
     float platform_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    
+
     // build bottom barrier
     int offset = 8;
     for (int i = 0; i < 8; i++) {
@@ -179,25 +180,25 @@ void initgPlatform(Entity* platforms, GLuint texture) {
         std::memcpy(platforms[i].vertices, platform_vertices, sizeof(platforms[i].vertices));
         std::memcpy(platforms[i].texCoords, platform_texCoords, sizeof(platforms[i].texCoords));
     }
-    
+
     // build right barrier
-    for (int i = (offset*2); i < (5 + (offset*2)); i++) {
+    for (int i = (offset * 2); i < (5 + (offset * 2)); i++) {
         platforms[i].entityType = PLATFORM;
         platforms[i].textureID = texture;
-        platforms[i].position = glm::vec3(4.5f, -1.5f + (i - (offset*2)), 0);
+        platforms[i].position = glm::vec3(4.5f, -1.5f + (i - (offset * 2)), 0);
         std::memcpy(platforms[i].vertices, platform_vertices, sizeof(platforms[i].vertices));
         std::memcpy(platforms[i].texCoords, platform_texCoords, sizeof(platforms[i].texCoords));
     }
-    
+
     // build left barrier
-    for (int i = (offset*3); i < (5 + (offset*3)); i++) {
+    for (int i = (offset * 3); i < (5 + (offset * 3)); i++) {
         platforms[i].entityType = PLATFORM;
         platforms[i].textureID = texture;
-        platforms[i].position = glm::vec3(-4.5f, -2.5f + (i - (offset*3)), 0);
+        platforms[i].position = glm::vec3(-4.5f, -2.5f + (i - (offset * 3)), 0);
         std::memcpy(platforms[i].vertices, platform_vertices, sizeof(platforms[i].vertices));
         std::memcpy(platforms[i].texCoords, platform_texCoords, sizeof(platforms[i].texCoords));
     }
-    
+
 }
 
 
@@ -400,8 +401,8 @@ void ProcessInput() {
         case SDL_KEYDOWN:
             switch (event.key.keysym.sym) {
             case SDLK_SPACE:
-                states[currentLevel].player.Jump(5.0f);
-                playJump();
+                //states[currentLevel].player.Jump(5.0f);
+                //playJump();
                 break;
 
             case SDLK_RSHIFT:
@@ -417,6 +418,7 @@ void ProcessInput() {
 
     // reset player velocity to prevent continuous movement
     states[currentLevel].player.velocity.x = 0;
+    states[currentLevel].player.velocity.y = 0;
 
     // Check for pressed/held keys below
     const Uint8* keys = SDL_GetKeyboardState(NULL);
@@ -424,6 +426,16 @@ void ProcessInput() {
     // if A key is help down
     if (keys[SDL_SCANCODE_A]) {
         states[currentLevel].player.velocity.x = -3.0f;
+        states[currentLevel].player.entityDir = LEFT;
+    }
+    // if W key is help down
+    else if (keys[SDL_SCANCODE_W]) {
+        states[currentLevel].player.velocity.y = 3.0f;
+        states[currentLevel].player.entityDir = LEFT;
+    }
+    // if S key is held down
+    else if (keys[SDL_SCANCODE_S]) {
+        states[currentLevel].player.velocity.y = -3.0f;
         states[currentLevel].player.entityDir = LEFT;
     }
     // if D key is held dowm
