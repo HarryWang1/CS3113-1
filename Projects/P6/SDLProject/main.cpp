@@ -474,6 +474,11 @@ void Update() {
             // check if we're at the last level
             if (currentLevel + 1 < LEVELS) {
                 currentLevel++;
+                projectionMatrix = glm::ortho(vmConst[0] *= 1.50, vmConst[1] *= 1.50, vmConst[2] *= 1.50, vmConst[3] *= 1.50, -1.0f, 1.0f);
+
+                program.SetProjectionMatrix(projectionMatrix);
+                program.SetViewMatrix(viewMatrix);
+
                 states[currentLevel].player.lives = states[currentLevel - 1].player.lives;
             }
             else {
