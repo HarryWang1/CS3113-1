@@ -269,20 +269,20 @@ void Initialize() {
     }
 
     // initialize enemy entities in all levels
-//    GLuint enemyLeft = LoadTexture("enemy_left.png");
-//    GLuint enemyRight = LoadTexture("enemy_right.png");
-//    GLuint enemy_textures[2] = { enemyLeft, enemyRight };
-//    for (int i = 0; i < LEVELS; i++) {
-//        initEnemy(states[i].enemies, enemy_textures, enemyCount[i]);
-//    }
+    GLuint enemyLeft = LoadTexture("enemy_left.png");
+    GLuint enemyRight = LoadTexture("enemy_right.png");
+    GLuint enemy_textures[2] = { enemyLeft, enemyRight };
+    for (int i = 0; i < LEVELS; i++) {
+        initEnemy(states[i].enemies, enemy_textures, enemyCount[i]);
+    }
 
 //    // initlize some other enemy ettributes
 //    // level 1
 //    //enemy 1
-//    states[0].enemies[0].position = glm::vec3(4, 4, 0);
-//    states[0].enemies[0].entityState = STILL;
-//    states[0].enemies[0].entityDir = LEFT;
-//    states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
+    states[0].enemies[0].position = glm::vec3(2, 1, 0);
+    states[0].enemies[0].entityState = STILL;
+    states[0].enemies[0].entityDir = LEFT;
+    states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
 //
 //
 //    // level 2
