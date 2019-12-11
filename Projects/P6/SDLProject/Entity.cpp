@@ -119,45 +119,43 @@ void Entity::EnemyAttributes() {
 
 // check this entity against other
 void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
+ 
+    // player collision flags
+    collidedTop = false;
+    collidedBottom = false;
+    collidedLeft = false;
+    collidedRight = false;
 
-    EnemyAttributes();
-    
-        // player collision flags
-        collidedTop = false;
-        collidedBottom = false;
-        collidedLeft = false;
-        collidedRight = false;
+    velocity += acceleration * deltaTime;
+    position.y += velocity.y * deltaTime;        // Move on Y
+    position.x += velocity.x * deltaTime;        // Move on X
 
-        velocity += acceleration * deltaTime;
-        position.y += velocity.y * deltaTime;        // Move on Y
-        position.x += velocity.x * deltaTime;        // Move on X
-    
-        // dont collision detect with enemies
-        if (entityType == ENEMY) { return; }
-            
-        CheckCollisionsY(objects, objectCount);
-        CheckCollisionsX(objects, objectCount);
+    // dont collision detect with enemies
+    if (entityType == ENEMY) { return; }
 
-        // check if enemy has killed player
-        for (int i = 0; i < objectCount; i++) {
+    CheckCollisionsY(objects, objectCount);
+    CheckCollisionsX(objects, objectCount);
 
-            Entity* other = &objects[i]; // this has to be a fucking pointer or else the entityState wont update - took me like 8 hours to realize
-            
-            // if any collision happened between player and enemy
-            if ((collidedLeft or collidedRight or collidedTop or collidedBottom) and (entityType == PLAYER and other->entityType == ENEMY)) {
-                
-                // lock helps stabalize the count of player lives
-                if (lives > 0) {
-                    lifeLock = true;
-                    //set posiiton back to start
-                    position = startPosition;
-                }
-                else {
-                    entityState = DEAD;
-                }
+    // check if enemy has killed player
+    for (int i = 0; i < objectCount; i++) {
+
+        Entity* other = &objects[i]; // this has to be a fucking pointer or else the entityState wont update - took me like 8 hours to realize
+
+        // if any collision happened between player and enemy
+        if ((collidedLeft or collidedRight or collidedTop or collidedBottom) and (entityType == PLAYER and other->entityType == ENEMY)) {
+
+            // lock helps stabalize the count of player lives
+            if (lives > 0) {
+                lifeLock = true;
+                //set posiiton back to start
+                position = startPosition;
+            }
+            else {
+                entityState = DEAD;
             }
         }
     }
+}
 
 
 
