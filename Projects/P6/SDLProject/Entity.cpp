@@ -54,6 +54,13 @@ void Entity::CheckCollisionsY(Entity* objects, int objectCount) {
                 collidedBottom = true;
                 object->collidedTop = true;
             }
+            else if (velocity.y == 0) {
+                velocity.y = 0;
+                collidedTop = true;
+                collidedBottom = true;
+                object->collidedTop = true;
+                object->collidedBottom = true;
+            }
         }
     }
 }
@@ -135,9 +142,11 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
         for (int i = 0; i < objectCount; i++) {
 
             Entity* other = &objects[i]; // this has to be a fucking pointer or else the entityState wont update - took me like 8 hours to realize
-
+            
+            // if any collision happened between player and enemy
             if ((collidedLeft or collidedRight or collidedTop or collidedBottom) and (entityType == PLAYER and other->entityType == ENEMY)) {
-                //other->velocity.x = 0;
+                
+                // lock helps stabalize the count of player lives
                 if (lives > 0) {
                     lifeLock = true;
                     //set posiiton back to start

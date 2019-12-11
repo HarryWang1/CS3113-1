@@ -35,19 +35,18 @@ int currentLevel = 0; // level count starts from zero for reasons ;^)
 // define level count
 #define LEVELS 3
 
-// define MAX barrier count per level
+// define MAX barrier count per level, this number just has to be >= then the max number of platforms in any level
 #define MAX_PLAT 8000
 
 // define MAX enemies per level
 #define MAX_ENEMY 4
 
+// define max lives for player
+#define MAX_LIVES 3
+
 // define MAX banner per level
 #define MAX_BANNER 3
 
-
-// define live enemy count for game and start helper flag
-int liveCount = 0;
-bool start = true;
 
 // define used platform count for rendering
 int platCount = 0;
@@ -66,9 +65,14 @@ Entity player;
 // game barriers - 80 = (640/64) * ceil(480/64) - maximum tiles of (64x64) pixels in screen
 Entity platforms[MAX_PLAT];
 
-
 // banners - menu, win, lost, etc.
 Entity banners[MAX_BANNER];
+
+// lives icons
+GLuint hearts[2];
+
+// player lives icons
+Entity lives[MAX_LIVES];
 
 
 //define GameState object - will keep track of objects in the game
@@ -217,7 +221,6 @@ void initgPlatform(Entity* platforms, GLuint texture, int currentLevel) {
         std::memcpy(platforms[i].texCoords, platform_texCoords, sizeof(platforms[i].texCoords));
         platCount++;
     }
-
 }
 
 
@@ -250,6 +253,32 @@ void initBanner(Entity* banners, GLuint* textures) {
 }
 
 
+// define lives icon init
+void initLivesIcons(Entity* hearts, GLuint* textures){
+    // initialize heart attributes
+    hearts[0].isStatic = true;
+    hearts[0].textureID = textures[0];
+    float hearts0_vertices[] = { -0.25, -0.25, 0.25, -0.25, 0.25, 0.25, -0.25, -0.25, 0.25, 0.25, -0.25, 0.25 };
+    float hearts0_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    std::memcpy(hearts[0].vertices, hearts0_vertices, sizeof(hearts[0].vertices));
+    std::memcpy(hearts[0].texCoords, hearts0_texCoords, sizeof(hearts[0].texCoords));
+
+    hearts[1].isStatic = true;
+    hearts[1].textureID = textures[0];
+    float hearts1_vertices[] = { -0.25, -0.25, 0.25, -0.25, 0.25, 0.25, -0.25, -0.25, 0.25, 0.25, -0.25, 0.25 };
+    float hearts1_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    std::memcpy(hearts[1].vertices, hearts1_vertices, sizeof(hearts[1].vertices));
+    std::memcpy(hearts[1].texCoords, hearts1_texCoords, sizeof(hearts[1].texCoords));
+    
+    hearts[2].isStatic = true;
+    hearts[2].textureID = textures[0];
+    float hearts3_vertices[] = { -0.25, -0.25, 0.25, -0.25, 0.25, 0.25, -0.25, -0.25, 0.25, 0.25, -0.25, 0.25 };
+    float hearts3_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    std::memcpy(hearts[2].vertices, hearts3_vertices, sizeof(hearts[2].vertices));
+    std::memcpy(hearts[2].texCoords, hearts3_texCoords, sizeof(hearts[2].texCoords));
+}
+
+
 // define initialize function
 GLuint Initialize() {
 
@@ -262,7 +291,7 @@ GLuint Initialize() {
     Mix_PlayMusic(music, -1);
 
     // init display window
-    displayWindow = SDL_CreateWindow("CASTLE RAIDER v1", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+    displayWindow = SDL_CreateWindow("Garden Blocker by Awsiim and Kevin", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
     SDL_GL_MakeCurrent(displayWindow, context);
 
@@ -294,84 +323,21 @@ GLuint Initialize() {
     for (int i = 1; i < LEVELS; i++) {
         states[i].goal *= pow(scaleFactor, i);
     }
-
-    // initlize some other enemy ettributesd
-    // LEVEL 1:
-    //TWO bullets from Bottom
-    states[0].enemies[0].rate = 5;
-    states[0].enemies[0].position = glm::vec3(2, 0, 0);
-    states[0].enemies[0].entityState = BOTTOM;
-    states[0].enemies[0].entityDir = LEFT;
-    states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
-
-    states[0].enemies[1].rate = 1;
-    states[0].enemies[1].position = glm::vec3(0, 0, 0);
-    states[0].enemies[1].entityState = BOTTOM;
-    states[0].enemies[1].entityDir = LEFT;
-    states[0].enemies[1].textureID = states[0].enemies[1].textures[0];
-
-    //TWO bullets from SIDE
-    states[0].enemies[2].rate = -1;
-    states[0].enemies[2].position = glm::vec3(2, 1, 0);
-    states[0].enemies[2].entityState = SIDE;
-    states[0].enemies[2].entityDir = LEFT;
-    states[0].enemies[2].textureID = states[0].enemies[2].textures[1];
-
-    states[0].enemies[3].rate = -1;
-    states[0].enemies[3].position = glm::vec3(1, 1, 0);
-    states[0].enemies[3].entityState = SIDE;
-    states[0].enemies[3].entityDir = LEFT;
-    states[0].enemies[3].textureID = states[0].enemies[2].textures[1];
-
-      
-      
-    // level 2
-    //TWO bullets from Bottom
-    states[1].enemies[0].rate = 1;
-    states[1].enemies[0].position = glm::vec3(2, 0, 0);
-    states[1].enemies[0].entityState = BOTTOM;
-    states[1].enemies[0].entityDir = LEFT;
-    states[1].enemies[0].textureID = states[0].enemies[0].textures[0];
-
-    states[1].enemies[1].rate = 1;
-    states[1].enemies[1].position = glm::vec3(1, 0, 0);
-    states[1].enemies[1].entityState = BOTTOM;
-    states[1].enemies[1].entityDir = LEFT;
-    states[1].enemies[1].textureID = states[0].enemies[1].textures[0];
-
-    //TWO bullets from SIDE
-    states[1].enemies[2].rate = -1;
-    states[1].enemies[2].position = glm::vec3(2, 1, 0);
-    states[1].enemies[2].entityState = SIDE;
-    states[1].enemies[2].entityDir = LEFT;
-    states[1].enemies[2].textureID = states[0].enemies[2].textures[1];
-
-    states[1].enemies[3].rate = -1;
-    states[1].enemies[3].position = glm::vec3(1, 1, 0);
-    states[1].enemies[3].entityState = SIDE;
-    states[1].enemies[3].entityDir = LEFT;
-    states[1].enemies[3].textureID = states[0].enemies[2].textures[1];
     
-    
-    //    // level 3
-    //    // update player's position from default to the middle for this level
-    //    states[2].player.position = glm::vec3(0, 4, 0);
-    //
-    //    //enemy 1
-    states[2].enemies[0].position = glm::vec3(-1, 0, 0);
-    states[2].enemies[0].entityState = STILL;
-    states[2].enemies[0].entityDir = LEFT;
-    states[2].enemies[0].textureID = states[0].enemies[0].textures[0];
-    //    //enemy 2
-    //    states[2].enemies[1].position = glm::vec3(-5, 4, 0);
-    //    states[2].enemies[1].entityState = AI;
-    //    states[2].enemies[1].entityDir = RIGHT;
-    //    states[2].enemies[1].textureID = states[0].enemies[0].textures[0];
-
-
     //load platform attributes and textures
     GLuint groundTextureID = LoadTexture("tdGrass.png");
     initgPlatform(platforms, groundTextureID, currentLevel);
+    
+    // init the hearts textures, hearts[0] = red, hearts[1] = grey
+    hearts[0] = LoadTexture("heart_red.png");
+    hearts[1] = LoadTexture("heart_grey.png");
+    initLivesIcons(lives, hearts);
+    
+    // set hearts position
+    lives[0].position = glm::vec3(-0.75f, 3.5f, 0.0f);
+    lives[1].position = glm::vec3(0.0f, 3.5f, 0.0f);
+    lives[2].position = glm::vec3(0.75f, 3.5f, 0.0f);
+    
 
     // init banner textures
     GLuint startBannerID = LoadTexture("start.png");
@@ -473,15 +439,21 @@ void Update(GLuint groundTextureID) {
     }
 
     while (deltaTime >= FIXED_TIMESTEP) {
-        
-        std::cout << player.position[0] << "," << player.position[1] << "," << player.position[2] << "      " << states[currentLevel].goal[0] << "," << states[currentLevel].goal[1] << "," << states[currentLevel].goal[2] << "\n";
-
         // check if player lost
         if (player.entityState == DEAD) {
             gameLost = true;
         }
-        // check if all enemies are dead, liveCount is non-dead enemy count in game
         else {
+            // update visual heart count to refelect player lives
+            if (player.lives == 1){
+                // set last heart to grey
+                lives[2].textureID = hearts[1];
+            }
+            else if (player.lives == 0){
+                // set middle heart to grey
+                lives[1].textureID = hearts[1];
+            }
+            // if player has reached goal
             if (player.position[0] >= states[currentLevel].goal[0] and player.position[1] <= states[currentLevel].goal[1]){
                 // check if we're not at the last level
                 if (currentLevel + 1 < LEVELS) {
@@ -489,6 +461,24 @@ void Update(GLuint groundTextureID) {
                     
                     // scale up level
                     projectionMatrix = glm::ortho(vmConst[0] *= scaleFactor, vmConst[1] *= scaleFactor, vmConst[2] *= scaleFactor, vmConst[3] *= scaleFactor, -1.0f, 1.0f);
+                    
+                    // fix position scaling of hearts icons
+                    for (int i = 0; i < MAX_LIVES; i++){
+                        // update position of heart icons
+                        lives[i].position[0] *= scaleFactor;
+                        lives[i].position[1] *= scaleFactor;
+                    }
+                    
+                    // scale up banners, 12 is the size of the verticies array in Entity objects
+                    for (int i = 0; i < 12; i++){
+                        int scaleVal = 1;
+                        if (currentLevel > 0){
+                            scaleVal = pow(scaleFactor, currentLevel);
+                        }
+                        banners[0].vertices[i] *= scaleFactor;
+                        banners[1].vertices[i] *= scaleFactor;
+                    }
+                    
                     // set new projection/view matrix
                     program.SetProjectionMatrix(projectionMatrix);
                     program.SetViewMatrix(viewMatrix);
@@ -521,11 +511,9 @@ void Update(GLuint groundTextureID) {
 
         // check and update all enemies in current level against platforms and player
         for (int i = 0; i < enemyCount[currentLevel]; i++) {
-            // dont update if dead
-            if (states[currentLevel].enemies[i].entityState != DEAD) {
-                states[currentLevel].enemies[i].Update(FIXED_TIMESTEP, platforms, platCount);
-            }
+            states[currentLevel].enemies[i].Update(FIXED_TIMESTEP, platforms, platCount);
         }
+        
         // update player walking direction texture that corresponds with it
         if (player.entityDir == LEFT) {
             player.textureID = player.textures[0];
@@ -537,6 +525,7 @@ void Update(GLuint groundTextureID) {
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;
+    
     // control count of player lives left
     if (player.lifeLock) {
         player.lives--;
@@ -566,20 +555,19 @@ void Render() {
     else {
         // render player
         player.Render(&program);
-
-        // render non-dead enemies in current level
-        liveCount = 0;
-        for (int i = 0; i < enemyCount[currentLevel]; i++) {
-            if (states[currentLevel].enemies[i].entityState != DEAD) {
-                start = false;
-                liveCount++;
-                states[currentLevel].enemies[i].Render(&program);
-            }
+        
+        // enemies in current level
+        for (int i = 0; i < enemyCount[currentLevel]; i++){
+            states[currentLevel].enemies[i].Render(&program);
         }
         // render USED barriers in stage
         for (int i = 0; i < platCount; i++) {
             platforms[i].Render(&program);
         }
+        // render lives icons
+        lives[0].Render(&program);
+        lives[1].Render(&program);
+        lives[2].Render(&program);
     }
     // swap to new frame
     SDL_GL_SwapWindow(displayWindow);
@@ -594,20 +582,18 @@ void Shutdown() {
 // main
 int main(int argc, char* argv[]) {
 
-    // initialize game
+    // initialize game. since we're making the levels as we go, we need the grass texture from the init
     GLuint updateTexture = Initialize();
 
     // master game loop
     while (gameIsRunning) {
         ProcessInput();
-
         // dont update game while we're at start screen
         if (startMenu) {
             banners[0].Render(&program);
         }
         else {
             Update(updateTexture);
-
         }
         Render();
     }

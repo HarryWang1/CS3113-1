@@ -20,6 +20,8 @@
 		3F8BE7762397C1B4003367B1 /* win.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3F8BE7662397C1B4003367B1 /* win.png */; };
 		3F8BE77923A0759F003367B1 /* bullet.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3F8BE77723A0759E003367B1 /* bullet.png */; };
 		3F8BE77A23A0759F003367B1 /* SideBullet.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3F8BE77823A0759F003367B1 /* SideBullet.png */; };
+		3F8BE77D23A0AF34003367B1 /* heart_grey.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3F8BE77B23A0AF34003367B1 /* heart_grey.png */; };
+		3F8BE77E23A0AF34003367B1 /* heart_red.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 3F8BE77C23A0AF34003367B1 /* heart_red.png */; };
 		DBDF1B532323DE3F007CECB1 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B522323DE3F007CECB1 /* main.cpp */; };
 		DBDF1B5E2323DE8D007CECB1 /* ShaderProgram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DBDF1B5D2323DE8D007CECB1 /* ShaderProgram.cpp */; };
 		DBDF1B612323DE9E007CECB1 /* shaders in CopyFiles */ = {isa = PBXBuildFile; fileRef = DBDF1B5C2323DE8D007CECB1 /* shaders */; };
@@ -40,6 +42,8 @@
 				DBDF1B612323DE9E007CECB1 /* shaders in CopyFiles */,
 				3F8BE7672397C1B4003367B1 /* RockSmash.wav in CopyFiles */,
 				3F8BE77923A0759F003367B1 /* bullet.png in CopyFiles */,
+				3F8BE77D23A0AF34003367B1 /* heart_grey.png in CopyFiles */,
+				3F8BE77E23A0AF34003367B1 /* heart_red.png in CopyFiles */,
 				3F8BE77A23A0759F003367B1 /* SideBullet.png in CopyFiles */,
 				3F8BE76B2397C1B4003367B1 /* bgMusic.wav in CopyFiles */,
 				3F8BE76C2397C1B4003367B1 /* mystery.wav in CopyFiles */,
@@ -70,6 +74,8 @@
 		3F8BE7662397C1B4003367B1 /* win.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = win.png; path = SDLProject/win.png; sourceTree = "<group>"; };
 		3F8BE77723A0759E003367B1 /* bullet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bullet.png; path = SDLProject/bullet.png; sourceTree = "<group>"; };
 		3F8BE77823A0759F003367B1 /* SideBullet.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = SideBullet.png; path = SDLProject/SideBullet.png; sourceTree = "<group>"; };
+		3F8BE77B23A0AF34003367B1 /* heart_grey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = heart_grey.png; path = SDLProject/heart_grey.png; sourceTree = "<group>"; };
+		3F8BE77C23A0AF34003367B1 /* heart_red.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = heart_red.png; path = SDLProject/heart_red.png; sourceTree = "<group>"; };
 		DBDF1B4F2323DE3F007CECB1 /* SDLProject */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLProject; sourceTree = BUILT_PRODUCTS_DIR; };
 		DBDF1B522323DE3F007CECB1 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		DBDF1B592323DE8D007CECB1 /* ShaderProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderProgram.h; sourceTree = "<group>"; };
@@ -103,6 +109,8 @@
 		DBDF1B462323DE3F007CECB1 = {
 			isa = PBXGroup;
 			children = (
+				3F8BE77B23A0AF34003367B1 /* heart_grey.png */,
+				3F8BE77C23A0AF34003367B1 /* heart_red.png */,
 				3F8BE77723A0759E003367B1 /* bullet.png */,
 				3F8BE77823A0759F003367B1 /* SideBullet.png */,
 				3F8BE75B2397C1B3003367B1 /* bgMusic.wav */,
