@@ -22,10 +22,10 @@
 enum  EntityType { PLAYER, ENEMY, PLATFORM };
 
 // entity state
-enum EntityState { STILL, WALKING, DEAD,AI };
+enum EntityState {SIDE, BOTTOM, STILL, WALKING, DEAD, AI };
 
 // entity direction - which way the entity is facing defined by dirrection last moved
-enum EntityDir { LEFT, RIGHT, AUTO};
+enum EntityDir { LEFT, RIGHT, AUTO };
 
 // class
 class Entity {
@@ -47,6 +47,7 @@ public:
     glm::vec3 velocity;
     glm::vec3 acceleration;
     float speed;
+    int rate;
 
     // entity textures - holds multiple states of same texture
     GLuint textures[2];
@@ -85,6 +86,9 @@ public:
 
     // jump function
     void Jump(float amt);
+
+    //EnemyAttribute 
+    void EnemyAttributes();
 
     // player collision flags
     bool collidedTop;

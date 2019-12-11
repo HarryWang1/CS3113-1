@@ -10,11 +10,11 @@ Entity::Entity()
     isStatic = true;
     isActive = true;
     position = glm::vec3(0);
-    startPosition = glm::vec3(-3.5, 3, 0);
+    startPosition = glm::vec3(-4, 3, 0);
     speed = 0;
     width = 1;
     height = 1;
-    lives = 2;
+    lives = 3;
 }
 
 // check collisions
@@ -163,7 +163,7 @@ void Entity::Jump(float amt)
         velocity.y = amt;
     }
 }
- 
+
 void playSmash() {
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
     Mix_Chunk* SoundCrush = Mix_LoadWAV("RockSmash.wav");
@@ -190,14 +190,14 @@ void Entity::startJump() {
     if (entityType == ENEMY and entityState == STILL) {
         // do jump routine
         Jump(2.0f);
-         
+
     }
 }
 
 void Entity::startAI(Entity player) {
     if (entityType == ENEMY and entityState == AI) {
-     
-        if (abs(player.position.y - position.y )< 2 && abs(player.position.x - position.x) <5.5) {
+
+        if (abs(player.position.y - position.y) < 2 && abs(player.position.x - position.x) < 5.5) {
 
             if (player.position.x < position.x) {
                 velocity.x = -1.0f;
@@ -216,67 +216,93 @@ void Entity::startAI(Entity player) {
 
 }
 
+void Entity::EnemyAttributes() {
+
+    if (entityType == ENEMY) {
+        if (position.y > 2) {
+            position.y = -2.5;
+        }
+        else if (position.x < -5) {
+            position.x = 4;
+        }
+        if (entityState == SIDE) {
+            velocity = glm::vec3(rate, 0, 0);
+        }
+        else {
+            velocity = glm::vec3(0, rate, 0);
+        }
+
+    }
+}
 
 // check this entity against other
 void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
 
-    // player collision flags
-    collidedTop = false;
-    collidedBottom = false;
-    collidedLeft = false;
-    collidedRight = false;
+    EnemyAttributes();
+ 
+    
+        // player collision flags
+        collidedTop = false;
+        collidedBottom = false;
+        collidedLeft = false;
+        collidedRight = false;
 
-    // sensor collision flags
-    sensorLeftCol = false;
-    sensorRightCol = false;
+        // sensor collision flags
+        sensorLeftCol = false;
+        sensorRightCol = false;
 
-    velocity += acceleration * deltaTime;
+        velocity += acceleration * deltaTime;
 
-    position.y += velocity.y * deltaTime;        // Move on Y
-    CheckCollisionsY(objects, objectCount);    // Fix if needed
+        position.y += velocity.y * deltaTime;        // Move on Y
+        CheckCollisionsY(objects, objectCount);    // Fix if needed
 
-    position.x += velocity.x * deltaTime;        // Move on X
-    CheckCollisionsX(objects, objectCount);    // Fix if needed
+        position.x += velocity.x * deltaTime;        // Move on X
+        if (entityType != ENEMY) {
+            
+        CheckCollisionsX(objects, objectCount);    // Fix if needed
 
-    sensorLeft.x = position.x - 0.6f;
-    sensorLeft.y = position.y - 0.6f;
-    CheckSensorLeft(objects, objectCount);
+        sensorLeft.x = position.x - 0.6f;
+        sensorLeft.y = position.y - 0.6f;
+        CheckSensorLeft(objects, objectCount);
 
-    sensorRight.x = position.x + 0.6f;
-    sensorRight.y = position.y - 0.6f;
-    CheckSensorRight(objects, objectCount);
+        sensorRight.x = position.x + 0.6f;
+        sensorRight.y = position.y - 0.6f;
+        CheckSensorRight(objects, objectCount);
 
-    // check if enemy has killed player
-    for (int i = 0; i < objectCount; i++) {
 
-        Entity* other = &objects[i]; // this has to be a fucking pointer or else the entityState wont update - took me like 8 hours to realize
 
         // check if enemy has killed player
-        if ((collidedLeft or collidedRight) and (entityType == PLAYER and other->entityType == ENEMY)) {
-            other->velocity.x = 0;
-            if (lives > 0) {
-            
+        for (int i = 0; i < objectCount; i++) {
 
-                lifeLock = true;
+            Entity* other = &objects[i]; // this has to be a fucking pointer or else the entityState wont update - took me like 8 hours to realize
 
-                //set posiiton back to start
-                // this is subtracting multiple lives, probably due to updating for all the enemies at once fix later
+            // check if enemy has killed player
+            if ((collidedLeft or collidedRight) and (entityType == PLAYER and other->entityType == ENEMY)) {
+                other->velocity.x = 0;
+                if (lives > 0) {
 
+
+                    lifeLock = true;
+
+                    //set posiiton back to start
+                    // this is subtracting multiple lives, probably due to updating for all the enemies at once fix later
+
+                }
+                else {
+                    entityState = DEAD;
+                }
             }
-            else {
-                entityState = DEAD;
-            }
-        }
 
-        // check if player has killed enemy
-        else if ((collidedBottom and other->collidedTop) and (entityType == PLAYER and other->entityType == ENEMY)) {
-            playSmash();
-            other->entityState = DEAD;
+            // check if player has killed enemy
+            else if ((collidedBottom and other->collidedTop) and (entityType == PLAYER and other->entityType == ENEMY)) {
+                playSmash();
+                other->entityState = DEAD;
+            }
         }
     }
 }
 
- 
+
 // render this entity using shade program
 void Entity::Render(ShaderProgram* program) {
     glm::mat4 modelMatrix = glm::mat4(1.0f);

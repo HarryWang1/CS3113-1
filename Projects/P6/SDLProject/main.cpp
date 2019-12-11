@@ -32,7 +32,7 @@ bool gameIsRunning = true;
 bool startMenu = true;
 bool gameWon = false;
 bool gameLost = false;
-glm::vec3 startPosition = glm::vec3(0, 0, 0);
+glm::vec3 startPosition = glm::vec3(0.23, 0, 0);
 int currentLevel = 0; // level count starts from zero for reasons ;^)
 
 
@@ -43,7 +43,7 @@ int currentLevel = 0; // level count starts from zero for reasons ;^)
 #define MAX_PLAT 8000
 
 // define MAX enemies per level
-#define MAX_ENEMY 3
+#define MAX_ENEMY 4
 
 // define MAX banner per level
 #define MAX_BANNER 3
@@ -57,7 +57,7 @@ bool start = true;
 int platCount = 0;
 
 // define enemy count for each level in the game
-int enemyCount[LEVELS] = { 1, 1, 1};
+int enemyCount[LEVELS] = { 4, 4, 1 };
 
 // original view matrix as list
 float scaleFactor = 1.50f;
@@ -89,7 +89,7 @@ struct GameState {
 
     // enemy directions
     EntityDir enemy_dir[MAX_ENEMY];
-    
+
 };
 
 
@@ -127,7 +127,7 @@ void initPlayer(Entity* player, GLuint* textures) {
     player->entityType = PLAYER;
     player->isStatic = false;
     player->width = 1.0f;
-    player->position = player->startPosition;
+    player->position = glm::vec3(0, 0, 0);
     player->entityDir = RIGHT;
     player->sensorLeft = glm::vec3(player->position.x + 0.6f, player->position.y - 0.6f, 0);
     player->sensorRight = glm::vec3(player->position.x - 0.6f, player->position.y - 0.6f, 0);
@@ -168,7 +168,7 @@ void initgPlatform(Entity* platforms, GLuint texture, int currentLevel) {
     // loop through and initialize ground & side barriers
     float platform_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
     float platform_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    
+
     // compute iteration range and position scale from level
     int range = 8;
     float posScale = 1.0f;
@@ -208,7 +208,7 @@ void initgPlatform(Entity* platforms, GLuint texture, int currentLevel) {
     }
 
     // build left barrier
-   for (int i = (range * 3); i < (range * 4); i++) {
+    for (int i = (range * 3); i < (range * 4); i++) {
         platforms[i].entityType = PLATFORM;
         platforms[i].textureID = texture;
         platforms[i].position = glm::vec3(-4.5f * posScale, (-3.5 * posScale) + (i - (range * 3)), 0);
@@ -258,7 +258,7 @@ GLuint Initialize() {
     SDL_Init(SDL_INIT_AUDIO);
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
     Mix_Music* music;
-    music = Mix_LoadMUS("bgMusic.wav");
+    music = Mix_LoadMUS("mystery.wav");
     Mix_PlayMusic(music, -1);
 
     // init display window
@@ -283,47 +283,89 @@ GLuint Initialize() {
     initPlayer(&player, player_textures);
 
     // initialize enemy entities in all levels
-    GLuint enemyLeft = LoadTexture("enemy_left.png");
-    GLuint enemyRight = LoadTexture("enemy_right.png");
+    GLuint enemyLeft = LoadTexture("bullet.png");
+    GLuint enemyRight = LoadTexture("SideBullet.png");
     GLuint enemy_textures[2] = { enemyLeft, enemyRight };
     for (int i = 0; i < LEVELS; i++) {
         initEnemy(states[i].enemies, enemy_textures, enemyCount[i]);
     }
 
-//    // initlize some other enemy ettributes
-//    // level 1
-//    //enemy 1
-    states[0].enemies[0].position = glm::vec3(2, 0, 0);
-    states[0].enemies[0].entityState = STILL;
-    states[0].enemies[0].entityDir = LEFT;
-    states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
-//
-//
-//    // level 2
-//    //enemy 1
-    states[1].enemies[0].position = glm::vec3(2, -1, 0);
-    states[1].enemies[0].entityState = STILL;
-    states[1].enemies[0].entityDir = LEFT;
-    states[1].enemies[0].textureID = states[0].enemies[0].textures[0];
-//
-//
-//    // level 3
-//    // update player's position from default to the middle for this level
-//    states[2].player.position = glm::vec3(0, 4, 0);
-//
-//    //enemy 1
+    //    // initlize some other enemy ettributes
+            // LEVEL 1:
+                    //TWO bullets from Bottom
+            states[0].enemies[0].rate = 5;
+            states[0].enemies[0].position = glm::vec3(2, 0, 0);
+            states[0].enemies[0].entityState = BOTTOM;
+            states[0].enemies[0].entityDir = LEFT;
+            states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
+
+            states[0].enemies[1].rate = 1;
+            states[0].enemies[1].position = glm::vec3(0, 0, 0);
+            states[0].enemies[1].entityState = BOTTOM;
+            states[0].enemies[1].entityDir = LEFT;
+            states[0].enemies[1].textureID = states[0].enemies[1].textures[0];
+
+            //TWO bullets from SIDE
+            states[0].enemies[2].rate = -1;
+            states[0].enemies[2].position = glm::vec3(2, 1, 0);
+            states[0].enemies[2].entityState = SIDE;
+            states[0].enemies[2].entityDir = LEFT;
+            states[0].enemies[2].textureID = states[0].enemies[2].textures[1];
+
+            states[0].enemies[3].rate = -1;
+            states[0].enemies[3].position = glm::vec3(1, 1, 0);
+            states[0].enemies[3].entityState = SIDE;
+            states[0].enemies[3].entityDir = LEFT;
+            states[0].enemies[3].textureID = states[0].enemies[2].textures[1];
+
+    //
+    //
+    //    // level 2
+    //    //enemy 1
+                    //TWO bullets from Bottom
+            states[1].enemies[0].rate = 1;
+            states[1].enemies[0].position = glm::vec3(2, 0, 0);
+            states[1].enemies[0].entityState = BOTTOM;
+            states[1].enemies[0].entityDir = LEFT;
+            states[1].enemies[0].textureID = states[0].enemies[0].textures[0];
+
+            states[1].enemies[1].rate = 1;
+            states[1].enemies[1].position = glm::vec3(1, 0, 0);
+            states[1].enemies[1].entityState = BOTTOM;
+            states[1].enemies[1].entityDir = LEFT;
+            states[1].enemies[1].textureID = states[0].enemies[1].textures[0];
+
+            //TWO bullets from SIDE
+            states[1].enemies[2].rate = -1;
+            states[1].enemies[2].position = glm::vec3(2, 1, 0);
+            states[1].enemies[2].entityState = SIDE;
+            states[1].enemies[2].entityDir = LEFT;
+            states[1].enemies[2].textureID = states[0].enemies[2].textures[1];
+
+            states[1].enemies[3].rate = -1;
+            states[1].enemies[3].position = glm::vec3(1, 1, 0);
+            states[1].enemies[3].entityState = SIDE;
+            states[1].enemies[3].entityDir = LEFT;
+            states[1].enemies[3].textureID = states[0].enemies[2].textures[1];
+    //
+    //
+    //    // level 3
+    //    // update player's position from default to the middle for this level
+    //    states[2].player.position = glm::vec3(0, 4, 0);
+    //
+    //    //enemy 1
     states[2].enemies[0].position = glm::vec3(-1, 0, 0);
     states[2].enemies[0].entityState = STILL;
     states[2].enemies[0].entityDir = LEFT;
     states[2].enemies[0].textureID = states[0].enemies[0].textures[0];
-//    //enemy 2
-//    states[2].enemies[1].position = glm::vec3(-5, 4, 0);
-//    states[2].enemies[1].entityState = AI;
-//    states[2].enemies[1].entityDir = RIGHT;
-//    states[2].enemies[1].textureID = states[0].enemies[0].textures[0];
+    //    //enemy 2
+    //    states[2].enemies[1].position = glm::vec3(-5, 4, 0);
+    //    states[2].enemies[1].entityState = AI;
+    //    states[2].enemies[1].entityDir = RIGHT;
+    //    states[2].enemies[1].textureID = states[0].enemies[0].textures[0];
 
 
-    //load platform attributes and textures
+        //load platform attributes and textures
     GLuint groundTextureID = LoadTexture("tdGrass.png");
     //GLuint airTextureID = LoadTexture("air_stone.png");
     //GLuint plat_textures[2] = { groundTextureID, airTextureID };
@@ -386,8 +428,8 @@ GLuint Initialize() {
 
 
     // sets background color
- glClearColor(0.2f, 0.7f, 0.5f, 1.0f);
-    
+    glClearColor(0.2f, 0.7f, 0.5f, 1.0f);
+
     return groundTextureID;
 }
 
@@ -491,10 +533,10 @@ void Update(GLuint groundTextureID) {
 
                 program.SetProjectionMatrix(projectionMatrix);
                 program.SetViewMatrix(viewMatrix);
-                
+
                 // re-draw the level
                 initgPlatform(platforms, groundTextureID, currentLevel);
-                
+
                 // NEED TO UPDATE THIS TO CARRY OVER LIVES BETWEEN LEVELS
                 player.lives = player.lives;
             }
