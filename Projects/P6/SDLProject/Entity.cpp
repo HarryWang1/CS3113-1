@@ -140,20 +140,25 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
     for (int i = 0; i < objectCount; i++) {
 
         Entity* other = &objects[i]; // this has to be a fucking pointer or else the entityState wont update - took me like 8 hours to realize
+        if ((collidedLeft or collidedRight or collidedTop or collidedBottom) and (entityType == PLAYER and other->entityType == APPLE)) {
+            other->gotApple = true;
+        }
 
         // if any collision happened between player and enemy
-        if ((collidedLeft or collidedRight or collidedTop or collidedBottom) and (entityType == PLAYER and other->entityType == ENEMY)) {
+        if ((collidedLeft or collidedRight or collidedTop or collidedBottom) and (entityType == PLAYER and other->entityType == ENEMY )  ) {
+     
+                // lock helps stabalize the count of player lives
+                if (lives > 0) {
+                    lifeLock = true;
+                    //set posiiton back to start
+                    position = startPosition;
+                }
+                else {
+                    entityState = DEAD;
+                }
 
-            // lock helps stabalize the count of player lives
-            if (lives > 0) {
-                lifeLock = true;
-                //set posiiton back to start
-                position = startPosition;
             }
-            else {
-                entityState = DEAD;
-            }
-        }
+        
     }
 }
 

@@ -53,10 +53,10 @@ int currentLevel = 0; // level count starts from zero for reasons ;^)
 int platCount = 0;
 
 // define enemy count for each level in the game
-int enemyCount[LEVELS] = { 4, 6, 30 };
+int enemyCount[LEVELS] = { 5,8,30 };
 
 //tracks number of enemies set
-int enemiesSet[LEVELS] = { 3, 5, 29 };
+int enemiesSet[LEVELS] = { 4,7,29 };
 
 // original view matrix as list
 float scaleFactor = 1.50f;
@@ -74,6 +74,10 @@ Entity banners[MAX_BANNER];
 
 // lives icons
 GLuint hearts[2];
+
+GLuint apples[2];
+
+Entity apps[3];
 
 // player lives icons
 Entity lives[MAX_LIVES];
@@ -162,6 +166,7 @@ void initEnemy(Entity* enemies, GLuint* textures, int enemy_count) {
         enemies[i].acceleration = glm::vec3(0, 0, 0);
         enemies[i].textures[0] = textures[0];
         enemies[i].textures[1] = textures[1];
+        enemies[i].textures[2] = textures[2];
         float enemy_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
         float enemy_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
         std::memcpy(enemies[i].vertices, enemy_vertices, sizeof(enemies[i].vertices));
@@ -282,6 +287,35 @@ void initLivesIcons(Entity* hearts, GLuint* textures) {
     std::memcpy(hearts[2].texCoords, hearts3_texCoords, sizeof(hearts[2].texCoords));
 }
 
+
+// define lives icon init
+void initApples(Entity* apples, GLuint* textures) {
+    // initialize heart attributes
+    apples[0].entityType = APPLE;
+    apples[0].isStatic = false;
+    apples[0].textureID = textures[0];
+    float hearts0_vertices[] = { -0.25, -0.25, 0.25, -0.25, 0.25, 0.25, -0.25, -0.25, 0.25, 0.25, -0.25, 0.25 };
+    float hearts0_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    std::memcpy(apples[0].vertices, hearts0_vertices, sizeof(apples[0].vertices));
+    std::memcpy(apples[0].texCoords, hearts0_texCoords, sizeof(apples[0].texCoords));
+
+    apples[1].entityType = APPLE;
+    apples[1].isStatic = false;
+    apples[1].textureID = textures[0];
+ 
+    std::memcpy(apples[1].vertices, hearts0_vertices, sizeof(apples[1].vertices));
+    std::memcpy(apples[1].texCoords, hearts0_texCoords, sizeof(apples[1].texCoords));
+
+    apples[2].entityType = APPLE;
+    apples[2].isStatic = false;
+    apples[2].textureID = textures[0];
+ 
+    std::memcpy(apples[2].vertices, hearts0_vertices, sizeof(apples[2].vertices));
+    std::memcpy(apples[2].texCoords, hearts0_texCoords, sizeof(apples[2].texCoords));
+
+ 
+}
+
 void createEnemies(int level, int pos, int numinRow, EntityState state, int rate) {
 
     int maxEnemies = enemyCount[currentLevel];
@@ -336,9 +370,10 @@ GLuint Initialize() {
     initPlayer(&player, player_textures);
 
     // initialize enemy entities in all levels
-    GLuint enemyLeft = LoadTexture("bullet.png");
+    GLuint enemyLeft = LoadTexture("topant1.png");
     GLuint enemyRight = LoadTexture("leftant1.png");
-    GLuint enemy_textures[2] = { enemyLeft, enemyRight };
+    GLuint apple = LoadTexture("apple.png");
+    GLuint enemy_textures[3] = { enemyLeft, enemyRight, apple};
     for (int i = 0; i < LEVELS; i++) {
         initEnemy(states[i].enemies, enemy_textures, enemyCount[i]);
     }
@@ -351,25 +386,29 @@ GLuint Initialize() {
         //level,position,numInRow, Behavior, rate
         createEnemies(0, 0, 2, SIDE, 1);
         createEnemies(0, 0, 2, BOTTOM, 1);
+        createEnemies(0, -1, 1, BOTTOM, 5);
 
 
         createEnemies(1, 0, 2, SIDE, 4);
-        createEnemies(1, 2, 1, SIDE, 4);
+        createEnemies(1, 2, 1, SIDE, 7);
         createEnemies(1, 0, 1, BOTTOM, 4);
+        createEnemies(1, -2, 2, BOTTOM, 4);
         createEnemies(1, 4, 2, BOTTOM, 1);
 
 
 
         createEnemies(2, -1, 3, SIDE, 4);
-        createEnemies(2, 2, 5, SIDE, 4);
-        createEnemies(2, -5, 5, SIDE, 4);
-        createEnemies(2, 4, 16, SIDE, 4);/*
+        createEnemies(2, 2, 5, SIDE, 11);
+        createEnemies(2, -5, 5, SIDE, 30);
+        createEnemies(2, 4, 16, SIDE, 4);
         createEnemies(2, 0, 2, BOTTOM, 4);
         createEnemies(2, 4, 1, BOTTOM, 50);
         createEnemies(2, 6, 2, BOTTOM, 4);
         createEnemies(2, -1, 4, BOTTOM, 10);
         createEnemies(2, -2, 3, BOTTOM, 10);
-*/
+
+ 
+
 
 
     //load platform attributes and textures
@@ -385,6 +424,18 @@ GLuint Initialize() {
     lives[0].position = glm::vec3(-0.75f, 3.5f, 0.0f);
     lives[1].position = glm::vec3(0.0f, 3.5f, 0.0f);
     lives[2].position = glm::vec3(0.75f, 3.5f, 0.0f);
+
+    // init the hearts textures, hearts[0] = red, hearts[1] = grey
+    
+    apples[0] = LoadTexture("apple.png");
+    apples[1] = LoadTexture("apple.png");
+    initApples(apps,apples);
+
+    apps[0].position = glm::vec3(-1, -1, 0.0f);
+    apps[1].position = glm::vec3(4, -2, 0.0f);
+    apps[2].position = glm::vec3(-2, 3, 0.0f);
+
+
 
 
     // init banner textures
@@ -520,10 +571,11 @@ void Update(GLuint groundTextureID) {
                 lives[1].textureID = hearts[1];
             }
             // if player has reached goal
-            if (player.position[0] >= states[currentLevel].goal[0] and player.position[1] <= states[currentLevel].goal[1]) {
+            if (player.position[0] >= states[currentLevel].goal[0] and player.position[1] <= states[currentLevel].goal[1] and apps[currentLevel].gotApple) {
                 // check if we're not at the last level
                 if (currentLevel + 1 < LEVELS) {
                     currentLevel++;
+                    
 
                     // scale up level
                     projectionMatrix = glm::ortho(vmConst[0] *= scaleFactor, vmConst[1] *= scaleFactor, vmConst[2] *= scaleFactor, vmConst[3] *= scaleFactor, -1.0f, 1.0f);
@@ -575,20 +627,26 @@ void Update(GLuint groundTextureID) {
         // check and update player against platforms
         player.Update(FIXED_TIMESTEP, platforms, platCount);
 
+        //player.Update(FIXED_TIMESTEP, apps, 1);
+
+        /*if (
+            (abs(player.position.y + 0.5) - abs(apps[currentLevel].position.y - 0.5) < 0) and (abs(player.position.x - 0.5) - abs(apps[currentLevel].position.x + 0.5) < 0) ||
+            (abs(player.position.y + 0.5) - abs(apps[currentLevel].position.y - 0.5) < 0) and (abs(player.position.x + 0.5) - abs(apps[currentLevel].position.x - 0.5) < 0) ||
+
+            (abs(player.position.y - 0.5) - abs(apps[currentLevel].position.y + 0.5) < 0) and (abs(player.position.x - 0.5) - abs(apps[currentLevel].position.x + 0.5) < 0 )||
+            (abs(player.position.y - 0.5) - abs(apps[currentLevel].position.y + 0.5) < 0) and (abs(player.position.x + 0.5) - abs(apps[currentLevel].position.x - 0.5) < 0 ))
+  {
+            apps[currentLevel].gotApple = true;
+
+        }*/
+        if (abs(player.position.x - apps[currentLevel].position.x)<1 and abs(player.position.y - apps[currentLevel].position.y)<1) {
+            apps[currentLevel].gotApple = true;
+        }
+
         // check and update all enemies in current level against platforms and player
         for (int i = 0; i < enemyCount[currentLevel]; i++) {
             states[currentLevel].enemies[i].Update(FIXED_TIMESTEP, platforms, platCount);
-
-                flip = !false;
-                holder = 0;
-            
-            if (flip) {
-                states[currentLevel].enemies[i].textureID = states[0].enemies[0].textures[1];
-            }
-            else {
-                states[currentLevel].enemies[i].textureID = states[0].enemies[0].textures[0];
-            }
-        
+ 
 
             //MOVING THE ENEMIES IN A CYCLE
 
@@ -666,6 +724,17 @@ void Render() {
                 platforms[i].Render(&program);
             }
             // render lives icons
+         
+                if (currentLevel == 0 and !apps[0].gotApple) {
+                    apps[0].Render(&program);
+                }
+                else if (currentLevel == 1 and !apps[1].gotApple) {
+                    apps[1].Render(&program);
+                }
+                else if (currentLevel ==2 and !apps[2].gotApple){
+                    apps[2].Render(&program);
+                }
+            
             lives[0].Render(&program);
             lives[1].Render(&program);
             lives[2].Render(&program);

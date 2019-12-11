@@ -17,10 +17,10 @@
 #define COORDS_SIZE 12 // size of array that stores texture coordinates
 
 // eneity types
-enum  EntityType { PLAYER, ENEMY, PLATFORM };
+enum  EntityType { PLAYER, ENEMY, PLATFORM, APPLE};
 
 // entity state
-enum EntityState {SIDE, BOTTOM, STILL, WALKING, DEAD, AI };
+enum EntityState { SIDE, BOTTOM, STILL, WALKING, DEAD, AI };
 
 // entity direction - which way the entity is facing defined by dirrection last moved
 enum EntityDir { LEFT, RIGHT, AUTO };
@@ -38,7 +38,7 @@ public:
     bool isActive;
     int lives;
     bool lifeLock = false;
-
+    bool gotApple = false;
     // entity physics attributes
     glm::vec3 startPosition;
     glm::vec3 position;
@@ -66,7 +66,7 @@ public:
     bool CheckCollision(Entity* other);
     void CheckCollisionsX(Entity* objects, int objectCount);
     void CheckCollisionsY(Entity* objects, int objectCount);
-    
+
     // update function
     void Update(float deltaTime, Entity* objects, int objectCount);
     void Update(float deltaTime, Entity objects, int objectCount);
