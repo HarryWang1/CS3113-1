@@ -166,7 +166,6 @@ void initEnemy(Entity* enemies, GLuint* textures, int enemy_count) {
         enemies[i].acceleration = glm::vec3(0, 0, 0);
         enemies[i].textures[0] = textures[0];
         enemies[i].textures[1] = textures[1];
-        enemies[i].textures[2] = textures[2];
         float enemy_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
         float enemy_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
         std::memcpy(enemies[i].vertices, enemy_vertices, sizeof(enemies[i].vertices));
