@@ -317,6 +317,7 @@ void initApples(Entity* apples, GLuint* textures) {
 
 void createEnemies(int level, int pos, int numinRow, EntityState state, int rate) {
 
+    int maxEnemies = enemyCount[currentLevel];
     for (int i = 0; i < numinRow; i++) {
         states[level].enemies[enemiesSet[level] - i].entityState = state;
         if (state == BOTTOM) {
