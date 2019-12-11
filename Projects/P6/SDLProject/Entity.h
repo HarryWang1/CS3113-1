@@ -50,10 +50,6 @@ public:
     // entity textures - holds multiple states of same texture
     GLuint textures[2];
 
-    // entity sensors
-    glm::vec3 sensorLeft;
-    glm::vec3 sensorRight;
-
     // eneity size attributes
     float width;
     float height;
@@ -70,20 +66,13 @@ public:
     bool CheckCollision(Entity* other);
     void CheckCollisionsX(Entity* objects, int objectCount);
     void CheckCollisionsY(Entity* objects, int objectCount);
-
-    // sensor collision functions
-    void CheckSensorLeft(Entity* platforms, int platCount);
-    void CheckSensorRight(Entity* platforms, int platCount);
-
+    
     // update function
     void Update(float deltaTime, Entity* objects, int objectCount);
     void Update(float deltaTime, Entity objects, int objectCount);
 
     // render function
     void Render(ShaderProgram* program);
-
-    // jump function
-    void Jump(float amt);
 
     //EnemyAttribute 
     void EnemyAttributes();
@@ -94,14 +83,6 @@ public:
     bool collidedLeft;
     bool collidedRight;
 
-    // sensor collision flags
-    bool sensorLeftCol;
-    bool sensorRightCol;
-
-    // autonomous movement
-    void startWalk();
-    void startJump();
-    void startAI(Entity player);
 };
 
 

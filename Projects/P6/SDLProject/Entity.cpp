@@ -1,8 +1,6 @@
 #include "Entity.h"
 #include <SDL_mixer.h>
 
-
-
 // construct entity
 Entity::Entity()
 {
@@ -10,7 +8,7 @@ Entity::Entity()
     isStatic = true;
     isActive = true;
     position = glm::vec3(0);
-    startPosition = glm::vec3(-4, 3, 0);
+    startPosition = glm::vec3(-3.5, 3.5, 0);
     speed = 0;
     width = 1;
     height = 1;
@@ -93,136 +91,6 @@ void Entity::CheckCollisionsX(Entity* objects, int objectCount) {
 }
 
 
-// check left sensor
-bool senseLX = false;
-bool senseLY = false;
-void Entity::CheckSensorLeft(Entity* platforms, int platCount) {
-
-    for (int i = 0; i < platCount; i++) {
-
-        // only check sensor against platform entities
-        if (platforms[i].entityType != PLATFORM) {
-            return;
-        }
-
-        Entity platform = platforms[i];
-
-        // check player sensor position against other's position
-        if (sensorLeft.x > (platform.position.x - ((platform.width) / 2.0f))) {
-            senseLX = true;
-        }
-        else { senseLX = false; }
-
-        if (sensorLeft.y < (platform.position.y + ((platform.height) / 2.0f))) {
-            senseLY = true;
-        }
-        else { senseLY = false; }
-
-        if (senseLX and senseLY and collidedBottom) {
-            sensorLeftCol = true;
-            return;
-        }
-    }
-
-    sensorLeftCol = false;
-}
-
-
-//check right sensor
-bool senseRX = false;
-bool senseRY = false;
-void Entity::CheckSensorRight(Entity* platforms, int platCount) {
-
-    for (int i = 0; i < platCount; i++) {
-
-        // only check sensor against platform entities
-        if (platforms[i].entityType != PLATFORM) {
-            return;
-        }
-
-        Entity platform = platforms[i];
-
-        // check player sensor position against other's position
-        if (sensorRight.x < (platform.position.x + ((platform.width) / 2.0f))) {
-            senseRX = true;
-        }
-        else { senseRX = false; }
-
-        if (sensorRight.y < (platform.position.y + ((platform.height) / 2.0f))) {
-            senseRY = true;
-        }
-        else { senseRY = false; }
-
-        if (senseRX and senseRY and collidedBottom) {
-            sensorRightCol = true;
-            return;
-        }
-    }
-
-    sensorRightCol = false;
-}
-
-
-// make entity jump
-void Entity::Jump(float amt)
-{
-    if (collidedBottom) {
-        velocity.y = amt;
-    }
-}
-
-void playSmash() {
-    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
-    Mix_Chunk* SoundCrush = Mix_LoadWAV("RockSmash.wav");
-    Mix_PlayChannel(-1, SoundCrush, 0);
-}
-
-// starts autonomous walking routine
-void Entity::startWalk() {
-    // only enemies set to WALKING state will start walk routine
-    if (entityType == ENEMY and entityState == WALKING) {
-        //do walk routine
-        if (entityDir == LEFT) {
-            velocity.x = -1.0f;
-        }
-        else if (entityDir == RIGHT) {
-            velocity.x = 1.0f;
-        }
-    }
-}
-
-// starts autonomous jumping routine
-void Entity::startJump() {
-    // only enemies set to STILL state will start routine
-    if (entityType == ENEMY and entityState == STILL) {
-        // do jump routine
-        Jump(2.0f);
-
-    }
-}
-
-void Entity::startAI(Entity player) {
-    if (entityType == ENEMY and entityState == AI) {
-
-        if (abs(player.position.y - position.y) < 2 && abs(player.position.x - position.x) < 5.5) {
-
-            if (player.position.x < position.x) {
-                velocity.x = -1.0f;
-                entityDir = LEFT;
-            }
-            else {
-
-                velocity.x = 1.0f;
-                entityDir = RIGHT;
-            }
-        }
-        else {
-            velocity.x = 0;
-        }
-    }
-
-}
-
 void Entity::EnemyAttributes() {
 
     if (entityType == ENEMY) {
@@ -253,12 +121,7 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
         collidedLeft = false;
         collidedRight = false;
 
-        // sensor collision flags
-        sensorLeftCol = false;
-        sensorRightCol = false;
-
         velocity += acceleration * deltaTime;
-
         position.y += velocity.y * deltaTime;        // Move on Y
         position.x += velocity.x * deltaTime;        // Move on X
     
@@ -266,17 +129,7 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
         if (entityType == ENEMY) { return; }
             
         CheckCollisionsY(objects, objectCount);
-        CheckCollisionsX(objects, objectCount);    // Fix if needed
-
-        //sensorLeft.x = position.x - 0.6f;
-        //sensorLeft.y = position.y - 0.6f;
-        //CheckSensorLeft(objects, objectCount);
-
-        //sensorRight.x = position.x + 0.6f;
-        //sensorRight.y = position.y - 0.6f;
-        //CheckSensorRight(objects, objectCount);
-
-
+        CheckCollisionsX(objects, objectCount);
 
         // check if enemy has killed player
         for (int i = 0; i < objectCount; i++) {
@@ -294,12 +147,6 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
                     entityState = DEAD;
                 }
             }
-
-            // check if player has killed enemy
-//            else if ((collidedBottom and other->collidedTop) and (entityType == PLAYER and other->entityType == ENEMY)) {
-//                playSmash();
-//                other->entityState = DEAD;
-//            }
         }
     }
 

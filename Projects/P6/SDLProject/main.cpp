@@ -29,7 +29,6 @@ bool gameIsRunning = true;
 bool startMenu = true;
 bool gameWon = false;
 bool gameLost = false;
-glm::vec3 startPosition = glm::vec3(-3.5, 2.45, 0);
 int currentLevel = 0; // level count starts from zero for reasons ;^)
 
 
@@ -86,6 +85,9 @@ struct GameState {
 
     // enemy directions
     EntityDir enemy_dir[MAX_ENEMY];
+    
+    // level goal
+    glm::vec3 goal = glm::vec3(3.5, -3.5, 0);
 
 };
 
@@ -125,10 +127,10 @@ void initPlayer(Entity* player, GLuint* textures) {
     player->entityType = PLAYER;
     player->isStatic = false;
     player->width = 1.0f;
-    player->position = glm::vec3(-2, 2, 0);
+    player->position = player->startPosition;
     player->entityDir = RIGHT;
-    player->sensorLeft = glm::vec3(player->position.x + 0.6f, player->position.y - 0.6f, 0);
-    player->sensorRight = glm::vec3(player->position.x - 0.6f, player->position.y - 0.6f, 0);
+    //player->sensorLeft = glm::vec3(player->position.x + 0.6f, player->position.y - 0.6f, 0);
+    //player->sensorRight = glm::vec3(player->position.x - 0.6f, player->position.y - 0.6f, 0);
     player->acceleration = glm::vec3(0, 0, 0);
     player->textures[0] = textures[0];
     player->textures[1] = textures[1];
@@ -287,8 +289,13 @@ GLuint Initialize() {
     for (int i = 0; i < LEVELS; i++) {
         initEnemy(states[i].enemies, enemy_textures, enemyCount[i]);
     }
+    
+    // initialize goal in all levels
+    for (int i = 1; i < LEVELS; i++) {
+        states[i].goal *= pow(scaleFactor, i);
+    }
 
-    // initlize some other enemy ettributes
+    // initlize some other enemy ettributesd
     // LEVEL 1:
     //TWO bullets from Bottom
     states[0].enemies[0].rate = 5;
@@ -316,37 +323,36 @@ GLuint Initialize() {
     states[0].enemies[3].entityDir = LEFT;
     states[0].enemies[3].textureID = states[0].enemies[2].textures[1];
 
-    //
-    //
-    //    // level 2
-    //    //enemy 1
-                    //TWO bullets from Bottom
-            states[1].enemies[0].rate = 1;
-            states[1].enemies[0].position = glm::vec3(2, 0, 0);
-            states[1].enemies[0].entityState = BOTTOM;
-            states[1].enemies[0].entityDir = LEFT;
-            states[1].enemies[0].textureID = states[0].enemies[0].textures[0];
+      
+      
+    // level 2
+    //TWO bullets from Bottom
+    states[1].enemies[0].rate = 1;
+    states[1].enemies[0].position = glm::vec3(2, 0, 0);
+    states[1].enemies[0].entityState = BOTTOM;
+    states[1].enemies[0].entityDir = LEFT;
+    states[1].enemies[0].textureID = states[0].enemies[0].textures[0];
 
-            states[1].enemies[1].rate = 1;
-            states[1].enemies[1].position = glm::vec3(1, 0, 0);
-            states[1].enemies[1].entityState = BOTTOM;
-            states[1].enemies[1].entityDir = LEFT;
-            states[1].enemies[1].textureID = states[0].enemies[1].textures[0];
+    states[1].enemies[1].rate = 1;
+    states[1].enemies[1].position = glm::vec3(1, 0, 0);
+    states[1].enemies[1].entityState = BOTTOM;
+    states[1].enemies[1].entityDir = LEFT;
+    states[1].enemies[1].textureID = states[0].enemies[1].textures[0];
 
-            //TWO bullets from SIDE
-            states[1].enemies[2].rate = -1;
-            states[1].enemies[2].position = glm::vec3(2, 1, 0);
-            states[1].enemies[2].entityState = SIDE;
-            states[1].enemies[2].entityDir = LEFT;
-            states[1].enemies[2].textureID = states[0].enemies[2].textures[1];
+    //TWO bullets from SIDE
+    states[1].enemies[2].rate = -1;
+    states[1].enemies[2].position = glm::vec3(2, 1, 0);
+    states[1].enemies[2].entityState = SIDE;
+    states[1].enemies[2].entityDir = LEFT;
+    states[1].enemies[2].textureID = states[0].enemies[2].textures[1];
 
-            states[1].enemies[3].rate = -1;
-            states[1].enemies[3].position = glm::vec3(1, 1, 0);
-            states[1].enemies[3].entityState = SIDE;
-            states[1].enemies[3].entityDir = LEFT;
-            states[1].enemies[3].textureID = states[0].enemies[2].textures[1];
-    //
-    //
+    states[1].enemies[3].rate = -1;
+    states[1].enemies[3].position = glm::vec3(1, 1, 0);
+    states[1].enemies[3].entityState = SIDE;
+    states[1].enemies[3].entityDir = LEFT;
+    states[1].enemies[3].textureID = states[0].enemies[2].textures[1];
+    
+    
     //    // level 3
     //    // update player's position from default to the middle for this level
     //    states[2].player.position = glm::vec3(0, 4, 0);
@@ -398,16 +404,6 @@ GLuint Initialize() {
     return groundTextureID;
 }
 
-
-// define sound function when jump is invoked
-void playJump() {
-    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
-    Mix_Chunk* SoundCrush = Mix_LoadWAV("jumping.wav");
-    Mix_PlayChannel(-1, SoundCrush, 0);
-    Mix_VolumeChunk(SoundCrush, MIX_MAX_VOLUME / 8);
-}
-
-
 // define input function
 void ProcessInput() {
     SDL_Event event;
@@ -420,17 +416,11 @@ void ProcessInput() {
 
         case SDL_KEYDOWN:
             switch (event.key.keysym.sym) {
-            case SDLK_SPACE:
-                //states[currentLevel].player.Jump(5.0f);
-                //playJump();
-                break;
-
-            case SDLK_RSHIFT:
+            case SDLK_RETURN:
                 if (startMenu) {
                     startMenu = false;
                     gameIsRunning = true;
                 }
-
             }
             break;
         }
@@ -483,69 +473,59 @@ void Update(GLuint groundTextureID) {
     }
 
     while (deltaTime >= FIXED_TIMESTEP) {
+        
+        std::cout << player.position[0] << "," << player.position[1] << "," << player.position[2] << "      " << states[currentLevel].goal[0] << "," << states[currentLevel].goal[1] << "," << states[currentLevel].goal[2] << "\n";
 
         // check if player lost
         if (player.entityState == DEAD) {
             gameLost = true;
         }
         // check if all enemies are dead, liveCount is non-dead enemy count in game
-        else if (!start and liveCount == 0) {
+        else {
+            if (player.position[0] >= states[currentLevel].goal[0] and player.position[1] <= states[currentLevel].goal[1]){
+                // check if we're not at the last level
+                if (currentLevel + 1 < LEVELS) {
+                    currentLevel++;
+                    
+                    // scale up level
+                    projectionMatrix = glm::ortho(vmConst[0] *= scaleFactor, vmConst[1] *= scaleFactor, vmConst[2] *= scaleFactor, vmConst[3] *= scaleFactor, -1.0f, 1.0f);
+                    // set new projection/view matrix
+                    program.SetProjectionMatrix(projectionMatrix);
+                    program.SetViewMatrix(viewMatrix);
 
-            // check if we're at the last level
-            if (currentLevel + 1 < LEVELS) {
-                currentLevel++;
-                
-                // scale up level
-                projectionMatrix = glm::ortho(vmConst[0] *= scaleFactor, vmConst[1] *= scaleFactor, vmConst[2] *= scaleFactor, vmConst[3] *= scaleFactor, -1.0f, 1.0f);
-
-                program.SetProjectionMatrix(projectionMatrix);
-                program.SetViewMatrix(viewMatrix);
-
-                // re-draw the level
-                initgPlatform(platforms, groundTextureID, currentLevel);
-
-                // NEED TO UPDATE THIS TO CARRY OVER LIVES BETWEEN LEVELS
-                player.lives = player.lives;
+                    // re-draw the level
+                    initgPlatform(platforms, groundTextureID, currentLevel);
+                    
+                    //scale user start position
+                    if (currentLevel > 0){
+                        // change player start level as oposite of goal
+                        player.startPosition[0] = states[currentLevel].goal[1];
+                        player.startPosition[1] = states[currentLevel].goal[0];
+                    }
+                    // set player start position
+                    player.position = player.startPosition;
+                }
+                else {
+                    gameWon = true;
+                    return;
+                }
             }
-            else {
-                gameWon = true;
-                return;
-            }
-
         }
 
+        
         // check and update player against enemies
         player.Update(FIXED_TIMESTEP, states[currentLevel].enemies, enemyCount[currentLevel]);
-
 
         // check and update player against platforms
         player.Update(FIXED_TIMESTEP, platforms, platCount);
 
         // check and update all enemies in current level against platforms and player
         for (int i = 0; i < enemyCount[currentLevel]; i++) {
-
             // dont update if dead
             if (states[currentLevel].enemies[i].entityState != DEAD) {
                 states[currentLevel].enemies[i].Update(FIXED_TIMESTEP, platforms, platCount);
             }
-
-            // update enemey walking direction and texture that corresponds with it
-//            if (states[currentLevel].enemies[i].sensorLeftCol and !states[currentLevel].enemies[i].sensorRightCol) {
-//                states[currentLevel].enemies[i].entityDir = LEFT;
-//                states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[0];
-//            }
-//            else if (!states[currentLevel].enemies[i].sensorLeftCol and states[currentLevel].enemies[i].sensorRightCol) {
-//                states[currentLevel].enemies[i].entityDir = RIGHT;
-//                states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[1];
-//            }
-//            else if (states[currentLevel].enemies[i].velocity.x > 0 and states[currentLevel].enemies[i].entityState == AI) {
-//                states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[1];
-//            }
-//            else if (states[currentLevel].enemies[i].velocity.x < 0 and states[currentLevel].enemies[i].entityState == AI) {
-//                states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[0];
-//            }
         }
-
         // update player walking direction texture that corresponds with it
         if (player.entityDir == LEFT) {
             player.textureID = player.textures[0];
@@ -557,11 +537,11 @@ void Update(GLuint groundTextureID) {
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;
-
     // control count of player lives left
     if (player.lifeLock) {
         player.lives--;
-        player.position = startPosition;
+        player.position[0] = states[currentLevel].goal[1];
+        player.position[1] = states[currentLevel].goal[0];
         player.lifeLock = false;
     }
 }
@@ -596,7 +576,6 @@ void Render() {
                 states[currentLevel].enemies[i].Render(&program);
             }
         }
-
         // render USED barriers in stage
         for (int i = 0; i < platCount; i++) {
             platforms[i].Render(&program);
