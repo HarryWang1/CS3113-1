@@ -14,7 +14,7 @@ Entity::Entity()
     speed = 0;
     width = 1;
     height = 1;
-    lives = 3;
+    lives = 2;
 }
 
 // check collisions
@@ -80,6 +80,13 @@ void Entity::CheckCollisionsX(Entity* objects, int objectCount) {
                 velocity.x = 0;
                 collidedLeft = true;
                 object->collidedRight = true;
+            }
+            else if (velocity.x == 0) {
+                velocity.x = 0;
+                collidedLeft = true;
+                collidedRight = true;
+                object->collidedRight = true;
+                object->collidedLeft = true;
             }
         }
     }
@@ -239,7 +246,6 @@ void Entity::EnemyAttributes() {
 void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
 
     EnemyAttributes();
- 
     
         // player collision flags
         collidedTop = false;
@@ -254,20 +260,21 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
         velocity += acceleration * deltaTime;
 
         position.y += velocity.y * deltaTime;        // Move on Y
-        CheckCollisionsY(objects, objectCount);    // Fix if needed
-
         position.x += velocity.x * deltaTime;        // Move on X
-        if (entityType != ENEMY) {
+    
+        // dont collision detect with enemies
+        if (entityType == ENEMY) { return; }
             
+        CheckCollisionsY(objects, objectCount);
         CheckCollisionsX(objects, objectCount);    // Fix if needed
 
-        sensorLeft.x = position.x - 0.6f;
-        sensorLeft.y = position.y - 0.6f;
-        CheckSensorLeft(objects, objectCount);
+        //sensorLeft.x = position.x - 0.6f;
+        //sensorLeft.y = position.y - 0.6f;
+        //CheckSensorLeft(objects, objectCount);
 
-        sensorRight.x = position.x + 0.6f;
-        sensorRight.y = position.y - 0.6f;
-        CheckSensorRight(objects, objectCount);
+        //sensorRight.x = position.x + 0.6f;
+        //sensorRight.y = position.y - 0.6f;
+        //CheckSensorRight(objects, objectCount);
 
 
 
@@ -276,17 +283,12 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
 
             Entity* other = &objects[i]; // this has to be a fucking pointer or else the entityState wont update - took me like 8 hours to realize
 
-            // check if enemy has killed player
-            if ((collidedLeft or collidedRight) and (entityType == PLAYER and other->entityType == ENEMY)) {
-                other->velocity.x = 0;
+            if ((collidedLeft or collidedRight or collidedTop or collidedBottom) and (entityType == PLAYER and other->entityType == ENEMY)) {
+                //other->velocity.x = 0;
                 if (lives > 0) {
-
-
                     lifeLock = true;
-
                     //set posiiton back to start
-                    // this is subtracting multiple lives, probably due to updating for all the enemies at once fix later
-
+                    position = startPosition;
                 }
                 else {
                     entityState = DEAD;
@@ -294,13 +296,13 @@ void Entity::Update(float deltaTime, Entity* objects, int objectCount) {
             }
 
             // check if player has killed enemy
-            else if ((collidedBottom and other->collidedTop) and (entityType == PLAYER and other->entityType == ENEMY)) {
-                playSmash();
-                other->entityState = DEAD;
-            }
+//            else if ((collidedBottom and other->collidedTop) and (entityType == PLAYER and other->entityType == ENEMY)) {
+//                playSmash();
+//                other->entityState = DEAD;
+//            }
         }
     }
-}
+
 
 
 // render this entity using shade program

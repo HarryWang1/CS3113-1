@@ -16,8 +16,6 @@
 
 #define COORDS_SIZE 12 // size of array that stores texture coordinates
 
-
-
 // eneity types
 enum  EntityType { PLAYER, ENEMY, PLATFORM };
 

@@ -17,9 +17,6 @@
 
 #include "Entity.h"
 
-// BUGS //
-// PHAMTOM BARRIERS/BLACK BOXES
-// STAGE SCACALING NOT MATHMATICALLY CORRECT
 
 //declare some global variables for program
 SDL_Window* displayWindow;
@@ -32,7 +29,7 @@ bool gameIsRunning = true;
 bool startMenu = true;
 bool gameWon = false;
 bool gameLost = false;
-glm::vec3 startPosition = glm::vec3(0.23, 0, 0);
+glm::vec3 startPosition = glm::vec3(-3.5, 2.45, 0);
 int currentLevel = 0; // level count starts from zero for reasons ;^)
 
 
@@ -104,6 +101,7 @@ GLuint LoadTexture(const char* filePath) {
 
     if (image == NULL) {
         std::cout << "Unable to load image. Make sure the path is correct\n";
+        std::cout<<filePath<<"\n";
         assert(false);
     }
 
@@ -127,7 +125,7 @@ void initPlayer(Entity* player, GLuint* textures) {
     player->entityType = PLAYER;
     player->isStatic = false;
     player->width = 1.0f;
-    player->position = glm::vec3(0, 0, 0);
+    player->position = glm::vec3(-2, 2, 0);
     player->entityDir = RIGHT;
     player->sensorLeft = glm::vec3(player->position.x + 0.6f, player->position.y - 0.6f, 0);
     player->sensorRight = glm::vec3(player->position.x - 0.6f, player->position.y - 0.6f, 0);
@@ -164,6 +162,8 @@ void initEnemy(Entity* enemies, GLuint* textures, int enemy_count) {
 
 // define ground & side barrier initialization function
 void initgPlatform(Entity* platforms, GLuint texture, int currentLevel) {
+    // reset platcount
+    platCount = 0;
 
     // loop through and initialize ground & side barriers
     float platform_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
@@ -178,7 +178,6 @@ void initgPlatform(Entity* platforms, GLuint texture, int currentLevel) {
     }
 
     // build bottom barrier
-    //int offset = 8;
     for (int i = 0; i < range; i++) {
         platforms[i].entityType = PLATFORM;
         platforms[i].textureID = texture;
@@ -218,7 +217,6 @@ void initgPlatform(Entity* platforms, GLuint texture, int currentLevel) {
     }
 
 }
-
 
 
 // define banner initialization function
@@ -290,33 +288,33 @@ GLuint Initialize() {
         initEnemy(states[i].enemies, enemy_textures, enemyCount[i]);
     }
 
-    //    // initlize some other enemy ettributes
-            // LEVEL 1:
-                    //TWO bullets from Bottom
-            states[0].enemies[0].rate = 5;
-            states[0].enemies[0].position = glm::vec3(2, 0, 0);
-            states[0].enemies[0].entityState = BOTTOM;
-            states[0].enemies[0].entityDir = LEFT;
-            states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
+    // initlize some other enemy ettributes
+    // LEVEL 1:
+    //TWO bullets from Bottom
+    states[0].enemies[0].rate = 5;
+    states[0].enemies[0].position = glm::vec3(2, 0, 0);
+    states[0].enemies[0].entityState = BOTTOM;
+    states[0].enemies[0].entityDir = LEFT;
+    states[0].enemies[0].textureID = states[0].enemies[0].textures[0];
 
-            states[0].enemies[1].rate = 1;
-            states[0].enemies[1].position = glm::vec3(0, 0, 0);
-            states[0].enemies[1].entityState = BOTTOM;
-            states[0].enemies[1].entityDir = LEFT;
-            states[0].enemies[1].textureID = states[0].enemies[1].textures[0];
+    states[0].enemies[1].rate = 1;
+    states[0].enemies[1].position = glm::vec3(0, 0, 0);
+    states[0].enemies[1].entityState = BOTTOM;
+    states[0].enemies[1].entityDir = LEFT;
+    states[0].enemies[1].textureID = states[0].enemies[1].textures[0];
 
-            //TWO bullets from SIDE
-            states[0].enemies[2].rate = -1;
-            states[0].enemies[2].position = glm::vec3(2, 1, 0);
-            states[0].enemies[2].entityState = SIDE;
-            states[0].enemies[2].entityDir = LEFT;
-            states[0].enemies[2].textureID = states[0].enemies[2].textures[1];
+    //TWO bullets from SIDE
+    states[0].enemies[2].rate = -1;
+    states[0].enemies[2].position = glm::vec3(2, 1, 0);
+    states[0].enemies[2].entityState = SIDE;
+    states[0].enemies[2].entityDir = LEFT;
+    states[0].enemies[2].textureID = states[0].enemies[2].textures[1];
 
-            states[0].enemies[3].rate = -1;
-            states[0].enemies[3].position = glm::vec3(1, 1, 0);
-            states[0].enemies[3].entityState = SIDE;
-            states[0].enemies[3].entityDir = LEFT;
-            states[0].enemies[3].textureID = states[0].enemies[2].textures[1];
+    states[0].enemies[3].rate = -1;
+    states[0].enemies[3].position = glm::vec3(1, 1, 0);
+    states[0].enemies[3].entityState = SIDE;
+    states[0].enemies[3].entityDir = LEFT;
+    states[0].enemies[3].textureID = states[0].enemies[2].textures[1];
 
     //
     //
@@ -365,37 +363,9 @@ GLuint Initialize() {
     //    states[2].enemies[1].textureID = states[0].enemies[0].textures[0];
 
 
-        //load platform attributes and textures
+    //load platform attributes and textures
     GLuint groundTextureID = LoadTexture("tdGrass.png");
-    //GLuint airTextureID = LoadTexture("air_stone.png");
-    //GLuint plat_textures[2] = { groundTextureID, airTextureID };
-    // initialize ground platform in all levels
     initgPlatform(platforms, groundTextureID, currentLevel);
-
-
-
-    // air platforms in all levels
-    //level 2
-//    float platform_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
-//    float platform_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-//    for (int i = 10; i < 16; i++) {
-//        states[1].platforms[i].entityType = PLATFORM;
-//        states[1].platforms[i].textureID = airTextureID;
-//        states[1].platforms[i].position = glm::vec3(-4.5f + (i - 10), 1.0f, 0);
-//        std::memcpy(states[1].platforms[i].vertices, platform_vertices, sizeof(states[1].platforms[i].vertices));
-//        std::memcpy(states[1].platforms[i].texCoords, platform_texCoords, sizeof(states[1].platforms[i].texCoords));
-//    }
-
-
-    //level 3
-//    for (int i = 16; i < 20; i++) {
-//        states[2].platforms[i].entityType = PLATFORM;
-//        states[2].platforms[i].textureID = airTextureID;
-//        states[2].platforms[i].position = glm::vec3(-2.0f + (i - 16), 1.0f, 0);
-//        std::memcpy(states[2].platforms[i].vertices, platform_vertices, sizeof(states[2].platforms[i].vertices));
-//        std::memcpy(states[2].platforms[i].texCoords, platform_texCoords, sizeof(states[2].platforms[i].texCoords));
-//    }
-
 
     // init banner textures
     GLuint startBannerID = LoadTexture("start.png");
@@ -405,27 +375,22 @@ GLuint Initialize() {
     GLuint banner_textures[3] = { startBannerID,winBannerID, loseBannerID };
     initBanner(banners, banner_textures);
 
-
     // set program view, model, and projection matricies
     viewMatrix = glm::mat4(1.0f);
     modelMatrix = glm::mat4(1.0f);
     projectionMatrix = glm::ortho(-5.0f, 5.0f, -3.75f, 3.75f, -1.0f, 1.0f);
-
 
     // set matricies
     program.SetProjectionMatrix(projectionMatrix);
     program.SetViewMatrix(viewMatrix);
     program.SetColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-
     // use our shader program
     glUseProgram(program.programID);
-
 
     // enables and sets blending
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 
     // sets background color
     glClearColor(0.2f, 0.7f, 0.5f, 1.0f);
@@ -529,6 +494,8 @@ void Update(GLuint groundTextureID) {
             // check if we're at the last level
             if (currentLevel + 1 < LEVELS) {
                 currentLevel++;
+                
+                // scale up level
                 projectionMatrix = glm::ortho(vmConst[0] *= scaleFactor, vmConst[1] *= scaleFactor, vmConst[2] *= scaleFactor, vmConst[3] *= scaleFactor, -1.0f, 1.0f);
 
                 program.SetProjectionMatrix(projectionMatrix);
@@ -562,26 +529,21 @@ void Update(GLuint groundTextureID) {
                 states[currentLevel].enemies[i].Update(FIXED_TIMESTEP, platforms, platCount);
             }
 
-            // start autonomous routine for enemies
-            //states[currentLevel].enemies[i].startWalk();
-            //states[currentLevel].enemies[i].startJump();
-            //states[currentLevel].enemies[i].startAI(player);
-
             // update enemey walking direction and texture that corresponds with it
-            if (states[currentLevel].enemies[i].sensorLeftCol and !states[currentLevel].enemies[i].sensorRightCol) {
-                states[currentLevel].enemies[i].entityDir = LEFT;
-                states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[0];
-            }
-            else if (!states[currentLevel].enemies[i].sensorLeftCol and states[currentLevel].enemies[i].sensorRightCol) {
-                states[currentLevel].enemies[i].entityDir = RIGHT;
-                states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[1];
-            }
-            else if (states[currentLevel].enemies[i].velocity.x > 0 and states[currentLevel].enemies[i].entityState == AI) {
-                states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[1];
-            }
-            else if (states[currentLevel].enemies[i].velocity.x < 0 and states[currentLevel].enemies[i].entityState == AI) {
-                states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[0];
-            }
+//            if (states[currentLevel].enemies[i].sensorLeftCol and !states[currentLevel].enemies[i].sensorRightCol) {
+//                states[currentLevel].enemies[i].entityDir = LEFT;
+//                states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[0];
+//            }
+//            else if (!states[currentLevel].enemies[i].sensorLeftCol and states[currentLevel].enemies[i].sensorRightCol) {
+//                states[currentLevel].enemies[i].entityDir = RIGHT;
+//                states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[1];
+//            }
+//            else if (states[currentLevel].enemies[i].velocity.x > 0 and states[currentLevel].enemies[i].entityState == AI) {
+//                states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[1];
+//            }
+//            else if (states[currentLevel].enemies[i].velocity.x < 0 and states[currentLevel].enemies[i].entityState == AI) {
+//                states[currentLevel].enemies[i].textureID = states[currentLevel].enemies[i].textures[0];
+//            }
         }
 
         // update player walking direction texture that corresponds with it
