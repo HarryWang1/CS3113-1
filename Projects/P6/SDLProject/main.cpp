@@ -141,8 +141,6 @@ void initPlayer(Entity* player, GLuint* textures) {
     player->width = 1.0f;
     player->position = player->startPosition;
     player->entityDir = RIGHT;
-    //player->sensorLeft = glm::vec3(player->position.x + 0.6f, player->position.y - 0.6f, 0);
-    //player->sensorRight = glm::vec3(player->position.x - 0.6f, player->position.y - 0.6f, 0);
     player->acceleration = glm::vec3(0, 0, 0);
     player->textures[0] = textures[0];
     player->textures[1] = textures[1];
@@ -166,7 +164,6 @@ void initEnemy(Entity* enemies, GLuint* textures, int enemy_count) {
         enemies[i].acceleration = glm::vec3(0, 0, 0);
         enemies[i].textures[0] = textures[0];
         enemies[i].textures[1] = textures[1];
-        enemies[i].textures[2] = textures[2];
         float enemy_vertices[] = { -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5 };
         float enemy_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
         std::memcpy(enemies[i].vertices, enemy_vertices, sizeof(enemies[i].vertices));
@@ -288,37 +285,34 @@ void initLivesIcons(Entity* hearts, GLuint* textures) {
 }
 
 
-// define lives icon init
+// define apple icon init
 void initApples(Entity* apples, GLuint* textures) {
-    // initialize heart attributes
+    
+    float hearts_vertices[] = { -0.25, -0.25, 0.25, -0.25, 0.25, 0.25, -0.25, -0.25, 0.25, 0.25, -0.25, 0.25 };
+    float hearts_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    
+    // initialize apple attributes
     apples[0].entityType = APPLE;
     apples[0].isStatic = false;
     apples[0].textureID = textures[0];
-    float hearts0_vertices[] = { -0.25, -0.25, 0.25, -0.25, 0.25, 0.25, -0.25, -0.25, 0.25, 0.25, -0.25, 0.25 };
-    float hearts0_texCoords[] = { 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
-    std::memcpy(apples[0].vertices, hearts0_vertices, sizeof(apples[0].vertices));
-    std::memcpy(apples[0].texCoords, hearts0_texCoords, sizeof(apples[0].texCoords));
+    std::memcpy(apples[0].vertices, hearts_vertices, sizeof(apples[0].vertices));
+    std::memcpy(apples[0].texCoords, hearts_texCoords, sizeof(apples[0].texCoords));
 
     apples[1].entityType = APPLE;
     apples[1].isStatic = false;
     apples[1].textureID = textures[0];
- 
-    std::memcpy(apples[1].vertices, hearts0_vertices, sizeof(apples[1].vertices));
-    std::memcpy(apples[1].texCoords, hearts0_texCoords, sizeof(apples[1].texCoords));
+    std::memcpy(apples[1].vertices, hearts_vertices, sizeof(apples[1].vertices));
+    std::memcpy(apples[1].texCoords, hearts_texCoords, sizeof(apples[1].texCoords));
 
     apples[2].entityType = APPLE;
     apples[2].isStatic = false;
     apples[2].textureID = textures[0];
- 
-    std::memcpy(apples[2].vertices, hearts0_vertices, sizeof(apples[2].vertices));
-    std::memcpy(apples[2].texCoords, hearts0_texCoords, sizeof(apples[2].texCoords));
-
- 
+    std::memcpy(apples[2].vertices, hearts_vertices, sizeof(apples[2].vertices));
+    std::memcpy(apples[2].texCoords, hearts_texCoords, sizeof(apples[2].texCoords));
 }
 
 void createEnemies(int level, int pos, int numinRow, EntityState state, int rate) {
 
-    int maxEnemies = enemyCount[currentLevel];
     for (int i = 0; i < numinRow; i++) {
         states[level].enemies[enemiesSet[level] - i].entityState = state;
         if (state == BOTTOM) {
@@ -383,32 +377,28 @@ GLuint Initialize() {
         states[i].goal *= pow(scaleFactor, i);
     }
     //CREATE ENEMIES
-        //level,position,numInRow, Behavior, rate
-        createEnemies(0, 0, 2, SIDE, 1);
-        createEnemies(0, 0, 2, BOTTOM, 1);
-        createEnemies(0, -1, 1, BOTTOM, 5);
+    //level,position,numInRow, Behavior, rate
+    createEnemies(0, 0, 2, SIDE, 1);
+    createEnemies(0, 0, 2, BOTTOM, 1);
+    createEnemies(0, -1, 1, BOTTOM, 5);
 
 
-        createEnemies(1, 0, 2, SIDE, 4);
-        createEnemies(1, 2, 1, SIDE, 7);
-        createEnemies(1, 0, 1, BOTTOM, 4);
-        createEnemies(1, -2, 2, BOTTOM, 4);
-        createEnemies(1, 4, 2, BOTTOM, 1);
+    createEnemies(1, 0, 2, SIDE, 4);
+    createEnemies(1, 2, 1, SIDE, 7);
+    createEnemies(1, 0, 1, BOTTOM, 4);
+    createEnemies(1, -2, 2, BOTTOM, 4);
+    createEnemies(1, 4, 2, BOTTOM, 1);
 
 
-
-        createEnemies(2, -1, 3, SIDE, 4);
-        createEnemies(2, 2, 5, SIDE, 11);
-        createEnemies(2, -5, 5, SIDE, 30);
-        createEnemies(2, 4, 16, SIDE, 4);
-        createEnemies(2, 0, 2, BOTTOM, 4);
-        createEnemies(2, 4, 1, BOTTOM, 50);
-        createEnemies(2, 6, 2, BOTTOM, 4);
-        createEnemies(2, -1, 4, BOTTOM, 10);
-        createEnemies(2, -2, 3, BOTTOM, 10);
-
- 
-
+    createEnemies(2, -1, 3, SIDE, 4);
+    createEnemies(2, 2, 5, SIDE, 11);
+    createEnemies(2, -5, 5, SIDE, 30);
+    createEnemies(2, 4, 16, SIDE, 4);
+    createEnemies(2, 0, 2, BOTTOM, 4);
+    createEnemies(2, 4, 1, BOTTOM, 50);
+    createEnemies(2, 6, 2, BOTTOM, 4);
+    createEnemies(2, -1, 4, BOTTOM, 10);
+    createEnemies(2, -2, 3, BOTTOM, 10);
 
 
     //load platform attributes and textures
@@ -425,8 +415,7 @@ GLuint Initialize() {
     lives[1].position = glm::vec3(0.0f, 3.5f, 0.0f);
     lives[2].position = glm::vec3(0.75f, 3.5f, 0.0f);
 
-    // init the hearts textures, hearts[0] = red, hearts[1] = grey
-    
+    // init the apple textures
     apples[0] = LoadTexture("apple.png");
     apples[1] = LoadTexture("apple.png");
     initApples(apps,apples);
@@ -434,7 +423,6 @@ GLuint Initialize() {
     apps[0].position = glm::vec3(-1, -1, 0.0f);
     apps[1].position = glm::vec3(4, -2, 0.0f);
     apps[2].position = glm::vec3(-2, 3, 0.0f);
-
 
 
 
@@ -627,18 +615,6 @@ void Update(GLuint groundTextureID) {
         // check and update player against platforms
         player.Update(FIXED_TIMESTEP, platforms, platCount);
 
-        //player.Update(FIXED_TIMESTEP, apps, 1);
-
-        /*if (
-            (abs(player.position.y + 0.5) - abs(apps[currentLevel].position.y - 0.5) < 0) and (abs(player.position.x - 0.5) - abs(apps[currentLevel].position.x + 0.5) < 0) ||
-            (abs(player.position.y + 0.5) - abs(apps[currentLevel].position.y - 0.5) < 0) and (abs(player.position.x + 0.5) - abs(apps[currentLevel].position.x - 0.5) < 0) ||
-
-            (abs(player.position.y - 0.5) - abs(apps[currentLevel].position.y + 0.5) < 0) and (abs(player.position.x - 0.5) - abs(apps[currentLevel].position.x + 0.5) < 0 )||
-            (abs(player.position.y - 0.5) - abs(apps[currentLevel].position.y + 0.5) < 0) and (abs(player.position.x + 0.5) - abs(apps[currentLevel].position.x - 0.5) < 0 ))
-  {
-            apps[currentLevel].gotApple = true;
-
-        }*/
         if (abs(player.position.x - apps[currentLevel].position.x)<1 and abs(player.position.y - apps[currentLevel].position.y)<1) {
             apps[currentLevel].gotApple = true;
         }
@@ -666,8 +642,6 @@ void Update(GLuint groundTextureID) {
             else {
                 states[currentLevel].enemies[i].velocity = glm::vec3(0, states[currentLevel].enemies[i].rate, 0);
             }
-
-
         }
 
         // update player walking direction texture that corresponds with it
@@ -724,7 +698,6 @@ void Render() {
                 platforms[i].Render(&program);
             }
             // render lives icons
-         
                 if (currentLevel == 0 and !apps[0].gotApple) {
                     apps[0].Render(&program);
                 }
@@ -742,7 +715,6 @@ void Render() {
     }
         // swap to new frame
         SDL_GL_SwapWindow(displayWindow);
-    
 }
 
 

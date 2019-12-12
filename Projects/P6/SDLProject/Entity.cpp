@@ -29,7 +29,6 @@ bool Entity::CheckCollision(Entity* other) {
         lastCollision = other->entityType;
         return true;
     }
-
     return false;
 }
 
